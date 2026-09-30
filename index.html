@@ -1,51 +1,43 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Głosowanie — ankiety</title>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Głosowanie</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
+
     :root {
-      --bg: #f5f7fb;
-      --card: rgba(255,255,255,.92);
+      --bg: #f4f6fb;
+      --card: #ffffff;
       --text: #111827;
       --muted: #6b7280;
       --border: #e5e7eb;
       --primary: #4f46e5;
       --primary-dark: #4338ca;
       --danger: #dc2626;
-      --danger-dark: #b91c1c;
       --success: #16a34a;
-      --shadow: 0 10px 35px rgba(15, 23, 42, .08);
     }
 
     * {
       box-sizing: border-box;
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
-
     body {
       margin: 0;
-      min-height: 100vh;
       font-family:
         Inter,
-        ui-sans-serif,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
+        Arial,
         sans-serif;
-      background:
-        radial-gradient(circle at top left, #e0e7ff 0, transparent 35%),
-        radial-gradient(circle at top right, #dbeafe 0, transparent 30%),
-        var(--bg);
+      background: var(--bg);
       color: var(--text);
     }
 
@@ -54,365 +46,344 @@
       font: inherit;
     }
 
-    /* =========================
-       HEADER
-    ========================= */
+    /* HEADER */
 
     header {
-      position: relative;
-      overflow: hidden;
+      padding: 55px 20px 90px;
       color: white;
+      text-align: center;
       background:
         linear-gradient(
           135deg,
-          #111827 0%,
-          #312e81 55%,
-          #4f46e5 100%
+          #111827,
+          #312e81,
+          #4f46e5
         );
-      padding: 55px 20px 75px;
     }
 
-    header::before,
-    header::after {
-      content: "";
-      position: absolute;
-      border-radius: 50%;
-      background: rgba(255,255,255,.08);
-    }
-
-    header::before {
-      width: 260px;
-      height: 260px;
-      right: -80px;
-      top: -100px;
-    }
-
-    header::after {
-      width: 180px;
-      height: 180px;
-      left: -70px;
-      bottom: -90px;
-    }
-
-    .header-content {
-      position: relative;
-      z-index: 1;
-      max-width: 900px;
-      margin: auto;
-      text-align: center;
-    }
-
-    .logo {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+    header .icon {
       width: 70px;
       height: 70px;
-      margin-bottom: 18px;
+      margin: 0 auto 18px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
       border-radius: 22px;
-      background: rgba(255,255,255,.14);
-      backdrop-filter: blur(12px);
+
+      background:
+        rgba(255,255,255,.14);
+
       font-size: 34px;
-      box-shadow: 0 12px 35px rgba(0,0,0,.18);
     }
 
     header h1 {
       margin: 0;
-      font-size: clamp(34px, 7vw, 58px);
-      letter-spacing: -2px;
+      font-size: clamp(36px, 8vw, 60px);
     }
 
     header p {
       max-width: 600px;
-      margin: 15px auto 0;
+      margin: 14px auto 0;
       color: rgba(255,255,255,.78);
-      font-size: 17px;
       line-height: 1.6;
     }
 
-    /* =========================
-       MAIN
-    ========================= */
+    /* MAIN */
 
     main {
-      position: relative;
-      max-width: 900px;
-      margin: -35px auto 60px;
-      padding: 0 18px;
-      z-index: 2;
+      width: min(900px, calc(100% - 28px));
+      margin: -45px auto 50px;
     }
 
     .card {
       background: var(--card);
-      border: 1px solid rgba(255,255,255,.8);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(16px);
+      border-radius: 22px;
+      box-shadow:
+        0 10px 35px rgba(15,23,42,.08);
     }
 
-    /* =========================
-       CREATE
-    ========================= */
+    /* CREATE */
 
-    .create-card {
-      padding: 28px;
+    .create {
+      padding: 26px;
       margin-bottom: 30px;
     }
 
-    .section-title {
+    .title-row {
       display: flex;
       align-items: center;
       gap: 13px;
       margin-bottom: 22px;
     }
 
-    .section-icon {
+    .title-icon {
+      width: 44px;
+      height: 44px;
+
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 44px;
-      height: 44px;
+
       border-radius: 13px;
+
       background: #eef2ff;
       color: var(--primary);
-      font-size: 21px;
+
+      font-size: 23px;
     }
 
-    .section-title h2 {
+    .title-row h2 {
       margin: 0;
       font-size: 22px;
     }
 
-    .section-title p {
+    .title-row p {
       margin: 3px 0 0;
       color: var(--muted);
-      font-size: 14px;
+      font-size: 13px;
     }
 
-    .field {
-      margin-bottom: 12px;
-    }
-
-    .field input {
+    input {
       width: 100%;
-      padding: 14px 16px;
+      padding: 14px 15px;
+      margin-bottom: 10px;
+
       border: 1px solid var(--border);
-      border-radius: 13px;
+      border-radius: 12px;
+
       outline: none;
-      background: #fff;
-      color: var(--text);
+
       transition: .2s;
     }
 
-    .field input::placeholder {
-      color: #9ca3af;
-    }
-
-    .field input:focus {
+    input:focus {
       border-color: #818cf8;
-      box-shadow: 0 0 0 4px rgba(99,102,241,.12);
+
+      box-shadow:
+        0 0 0 4px
+        rgba(99,102,241,.12);
     }
 
-    .options-label {
+    .label {
       display: block;
-      margin: 18px 0 8px;
+      margin: 10px 0 9px;
+
       color: #374151;
+
       font-size: 13px;
-      font-weight: 700;
+      font-weight: bold;
     }
 
     .create-button {
       width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      margin-top: 18px;
-      padding: 14px 20px;
+      padding: 14px;
+
       border: 0;
-      border-radius: 13px;
-      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      border-radius: 12px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #4f46e5,
+          #6366f1
+        );
+
       color: white;
-      font-weight: 700;
+
+      font-weight: bold;
+
       cursor: pointer;
-      box-shadow: 0 8px 20px rgba(79,70,229,.25);
+
       transition: .2s;
     }
 
     .create-button:hover {
       transform: translateY(-1px);
-      box-shadow: 0 11px 25px rgba(79,70,229,.32);
     }
 
     .create-button:disabled {
-      opacity: .65;
+      opacity: .6;
       cursor: wait;
-      transform: none;
     }
 
-    /* =========================
-       MESSAGE
-    ========================= */
+    /* MESSAGE */
 
     #message {
-      margin-bottom: 18px;
+      margin-bottom: 15px;
     }
 
     .message {
       padding: 14px 16px;
-      border-radius: 13px;
+      border-radius: 12px;
       font-size: 14px;
       font-weight: 600;
     }
 
     .message.success {
-      background: #dcfce7;
       color: #166534;
-      border: 1px solid #bbf7d0;
+      background: #dcfce7;
     }
 
     .message.error {
-      background: #fee2e2;
       color: #991b1b;
-      border: 1px solid #fecaca;
+      background: #fee2e2;
     }
 
-    /* =========================
-       POLLS HEADER
-    ========================= */
+    /* POLLS HEADER */
 
-    .polls-heading {
+    .polls-header {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      margin: 0 2px 15px;
+      align-items: center;
+
+      margin: 0 3px 15px;
     }
 
-    .polls-heading h2 {
+    .polls-header h2 {
       margin: 0;
       font-size: 22px;
     }
 
-    .poll-count {
-      padding: 6px 10px;
+    .count {
+      padding: 6px 11px;
+
       border-radius: 999px;
+
       background: #e0e7ff;
       color: #4338ca;
+
       font-size: 12px;
-      font-weight: 800;
+      font-weight: bold;
     }
 
-    /* =========================
-       POLL CARD
-    ========================= */
+    /* POLL */
 
-    .poll-card {
+    .poll {
       padding: 24px;
-      margin-bottom: 18px;
-      animation: fadeIn .35s ease;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(8px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      margin-bottom: 17px;
     }
 
     .poll-top {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
+
       gap: 15px;
     }
 
-    .poll-title {
+    .question {
       margin: 0;
+
       font-size: 21px;
-      line-height: 1.35;
-      word-break: break-word;
+      line-height: 1.4;
+
+      overflow-wrap: anywhere;
     }
 
-    .delete-button {
+    .delete {
       flex-shrink: 0;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
+
       padding: 8px 11px;
+
       border: 1px solid #fecaca;
-      border-radius: 10px;
-      background: #fff;
+      border-radius: 9px;
+
+      background: white;
       color: var(--danger);
+
       font-size: 12px;
-      font-weight: 700;
+      font-weight: bold;
+
       cursor: pointer;
-      transition: .2s;
     }
 
-    .delete-button:hover {
+    .delete:hover {
       background: #fef2f2;
-      color: var(--danger-dark);
     }
 
-    .poll-meta {
+    .meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      margin: 9px 0 20px;
+      gap: 7px;
+
+      margin: 10px 0 20px;
+    }
+
+    .badge {
+      padding: 5px 8px;
+
+      border-radius: 7px;
+
+      background: #f3f4f6;
+
       color: var(--muted);
+
       font-size: 12px;
     }
 
-    .meta-badge {
-      padding: 5px 8px;
-      border-radius: 7px;
-      background: #f3f4f6;
+    .badge.voted {
+      background: #dcfce7;
+      color: #166534;
     }
 
-    /* =========================
-       OPTIONS
-    ========================= */
+    /* OPTIONS */
 
-    .option-row {
+    .option {
       margin: 12px 0;
     }
 
-    .vote-button {
+    .vote {
       position: relative;
       overflow: hidden;
+
       width: 100%;
       min-height: 52px;
-      padding: 14px 16px;
+
+      padding: 14px 15px;
+
       border: 1px solid var(--border);
-      border-radius: 13px;
+      border-radius: 12px;
+
       background: white;
-      color: var(--text);
+
       text-align: left;
+
       cursor: pointer;
+
       transition: .2s;
     }
 
-    .vote-button:hover:not(:disabled) {
+    .vote:hover:not(:disabled) {
       border-color: #818cf8;
       transform: translateY(-1px);
-      box-shadow: 0 5px 15px rgba(79,70,229,.10);
     }
 
-    .vote-button:disabled {
+    .vote:disabled {
       cursor: default;
     }
 
-    .option-content {
+    .progress {
+      position: absolute;
+      inset: 0 auto 0 0;
+
+      width: 0;
+
+      background: #eef2ff;
+
+      transition: width .5s;
+    }
+
+    .vote-content {
       position: relative;
       z-index: 2;
+
       display: flex;
       justify-content: space-between;
+
       gap: 10px;
+
       font-weight: 600;
     }
 
@@ -420,60 +391,37 @@
       overflow-wrap: anywhere;
     }
 
-    .option-number {
+    .percent {
       flex-shrink: 0;
-      color: #6b7280;
+      color: var(--muted);
       font-size: 13px;
     }
 
-    .progress {
-      position: absolute;
-      inset: 0 auto 0 0;
-      width: 0;
-      background: #eef2ff;
-      transition: width .5s ease;
-    }
-
-    .option-result {
+    .option-info {
       display: flex;
       justify-content: space-between;
-      margin-top: 6px;
-      padding: 0 4px;
+
+      padding: 5px 4px 0;
+
       color: var(--muted);
+
       font-size: 12px;
     }
 
-    .voted {
-      border-color: #6366f1 !important;
-      background: #eef2ff !important;
-    }
-
-    .voted .progress {
-      background: #ddd6fe;
-    }
-
-    .your-vote {
-      color: #4f46e5;
-      font-weight: 800;
-    }
-
-    /* =========================
-       EMPTY
-    ========================= */
+    /* EMPTY */
 
     .empty {
-      padding: 50px 25px;
+      padding: 55px 20px;
       text-align: center;
     }
 
     .empty-icon {
-      font-size: 48px;
-      margin-bottom: 12px;
+      font-size: 45px;
+      margin-bottom: 10px;
     }
 
     .empty h3 {
       margin: 0 0 7px;
-      font-size: 20px;
     }
 
     .empty p {
@@ -481,12 +429,10 @@
       color: var(--muted);
     }
 
-    /* =========================
-       LOADING
-    ========================= */
+    /* LOADING */
 
     .loading {
-      padding: 45px;
+      padding: 50px;
       text-align: center;
       color: var(--muted);
     }
@@ -494,10 +440,14 @@
     .spinner {
       width: 30px;
       height: 30px;
+
       margin: 0 auto 12px;
+
       border: 3px solid #e5e7eb;
       border-top-color: var(--primary);
+
       border-radius: 50%;
+
       animation: spin .7s linear infinite;
     }
 
@@ -507,128 +457,124 @@
       }
     }
 
-    /* =========================
-       CONFIRM MODAL
-    ========================= */
+    /* MODAL */
 
-    .modal-backdrop {
+    .modal {
       position: fixed;
       inset: 0;
-      z-index: 1000;
+
+      z-index: 100;
+
       display: none;
       align-items: center;
       justify-content: center;
+
       padding: 20px;
-      background: rgba(15,23,42,.55);
-      backdrop-filter: blur(5px);
+
+      background:
+        rgba(15,23,42,.55);
+
+      backdrop-filter: blur(4px);
     }
 
-    .modal-backdrop.show {
+    .modal.show {
       display: flex;
     }
 
-    .modal {
-      width: min(420px, 100%);
+    .modal-box {
+      width: min(420px,100%);
+
       padding: 25px;
+
       border-radius: 20px;
+
       background: white;
-      box-shadow: 0 25px 70px rgba(0,0,0,.25);
-      animation: modalIn .2s ease;
+
+      box-shadow:
+        0 25px 70px
+        rgba(0,0,0,.25);
     }
 
-    @keyframes modalIn {
-      from {
-        opacity: 0;
-        transform: scale(.96);
-      }
-
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
-    }
-
-    .modal h3 {
+    .modal-box h3 {
       margin: 0 0 8px;
     }
 
-    .modal p {
+    .modal-box p {
       margin: 0;
+
       color: var(--muted);
+
       line-height: 1.5;
     }
 
     .modal-buttons {
       display: flex;
       gap: 10px;
+
       margin-top: 22px;
     }
 
     .modal-buttons button {
       flex: 1;
+
       padding: 12px;
-      border-radius: 11px;
+
+      border-radius: 10px;
+
       cursor: pointer;
-      font-weight: 700;
+
+      font-weight: bold;
     }
 
-    .cancel-button {
+    .cancel {
       border: 1px solid var(--border);
       background: white;
-      color: var(--text);
     }
 
-    .confirm-delete {
+    .confirm {
       border: 0;
       background: var(--danger);
       color: white;
     }
 
-    .confirm-delete:hover {
-      background: var(--danger-dark);
-    }
-
-    /* =========================
-       FOOTER
-    ========================= */
+    /* FOOTER */
 
     footer {
-      padding: 25px;
+      padding: 20px;
+
       text-align: center;
+
       color: #9ca3af;
+
       font-size: 12px;
     }
 
-    /* =========================
-       MOBILE
-    ========================= */
+    /* MOBILE */
 
-    @media (max-width: 600px) {
+    @media(max-width:600px) {
 
       header {
-        padding: 40px 18px 65px;
+        padding: 40px 18px 75px;
       }
 
       main {
-        margin-top: -28px;
-        padding: 0 12px;
+        width: calc(100% - 20px);
       }
 
-      .create-card,
-      .poll-card {
+      .create,
+      .poll {
         padding: 19px;
-        border-radius: 19px;
       }
 
       .poll-top {
         flex-direction: column;
       }
 
-      .delete-button {
+      .delete {
         align-self: flex-end;
       }
 
-      .poll-title {
+      .question {
         font-size: 19px;
       }
 
@@ -639,52 +585,51 @@
     }
 
   </style>
+
 </head>
 
 
 <body>
 
+
 <header>
 
-  <div class="header-content">
-
-    <div class="logo">🗳️</div>
-
-    <h1>Głosowanie</h1>
-
-    <p>
-      Twórz własne ankiety, poznawaj opinie
-      i głosuj razem z innymi.
-    </p>
-
+  <div class="icon">
+    🗳️
   </div>
+
+  <h1>Głosowanie</h1>
+
+  <p>
+    Twórz ankiety, głosuj i sprawdzaj
+    wyniki w czasie rzeczywistym.
+  </p>
 
 </header>
 
 
 <main>
 
+
   <div id="message"></div>
 
 
-  <!-- =========================
-       CREATE POLL
-  ========================== -->
+  <!-- TWORZENIE -->
 
-  <section class="card create-card">
+  <section class="card create">
 
-    <div class="section-title">
+    <div class="title-row">
 
-      <div class="section-icon">
+      <div class="title-icon">
         ＋
       </div>
 
       <div>
 
-        <h2>Utwórz ankietę</h2>
+        <h2>Nowa ankieta</h2>
 
         <p>
-          Zadaj pytanie i dodaj odpowiedzi.
+          Utwórz pytanie i dodaj odpowiedzi.
         </p>
 
       </div>
@@ -692,63 +637,41 @@
     </div>
 
 
-    <div class="field">
-
-      <input
-        id="question"
-        type="text"
-        maxlength="200"
-        autocomplete="off"
-        placeholder="Np. Jaki jest Twój ulubiony sport?"
-      >
-
-    </div>
+    <input
+      id="question"
+      maxlength="200"
+      placeholder="Wpisz pytanie ankiety"
+    >
 
 
-    <span class="options-label">
+    <span class="label">
       Odpowiedzi
     </span>
 
 
-    <div class="field">
-      <input
-        id="option1"
-        type="text"
-        maxlength="100"
-        autocomplete="off"
-        placeholder="Odpowiedź A"
-      >
-    </div>
+    <input
+      id="option1"
+      maxlength="100"
+      placeholder="Odpowiedź A"
+    >
 
-    <div class="field">
-      <input
-        id="option2"
-        type="text"
-        maxlength="100"
-        autocomplete="off"
-        placeholder="Odpowiedź B"
-      >
-    </div>
+    <input
+      id="option2"
+      maxlength="100"
+      placeholder="Odpowiedź B"
+    >
 
-    <div class="field">
-      <input
-        id="option3"
-        type="text"
-        maxlength="100"
-        autocomplete="off"
-        placeholder="Odpowiedź C — opcjonalnie"
-      >
-    </div>
+    <input
+      id="option3"
+      maxlength="100"
+      placeholder="Odpowiedź C — opcjonalnie"
+    >
 
-    <div class="field">
-      <input
-        id="option4"
-        type="text"
-        maxlength="100"
-        autocomplete="off"
-        placeholder="Odpowiedź D — opcjonalnie"
-      >
-    </div>
+    <input
+      id="option4"
+      maxlength="100"
+      placeholder="Odpowiedź D — opcjonalnie"
+    >
 
 
     <button
@@ -756,24 +679,23 @@
       class="create-button"
       onclick="createPoll()"
     >
-      <span>＋</span>
-      <span>Utwórz ankietę</span>
+      ＋ Utwórz ankietę
     </button>
 
   </section>
 
 
-  <!-- =========================
-       POLLS
-  ========================== -->
+  <!-- ANKIETY -->
 
-  <div class="polls-heading">
+  <div class="polls-header">
 
-    <h2>📊 Ankiety</h2>
+    <h2>
+      📊 Ankiety
+    </h2>
 
     <span
       id="pollCount"
-      class="poll-count"
+      class="count"
     >
       0
     </span>
@@ -798,43 +720,44 @@
 
 
 <footer>
-  Głosowanie • Wszystkie głosy są zapisywane w Supabase
+  Głosowanie
 </footer>
 
 
-<!-- =========================
-     DELETE MODAL
-========================== -->
+<!-- MODAL USUWANIA -->
 
 <div
   id="deleteModal"
-  class="modal-backdrop"
+  class="modal"
 >
 
-  <div class="modal">
+  <div class="modal-box">
 
-    <h3>Usunąć ankietę?</h3>
+    <h3>
+      Usunąć ankietę?
+    </h3>
 
     <p>
-      Ta operacja usunie ankietę oraz jej odpowiedzi.
-      Tej operacji nie można cofnąć.
+      Ankieta, odpowiedzi i głosy zostaną
+      usunięte. Tej operacji nie można cofnąć.
     </p>
+
 
     <div class="modal-buttons">
 
       <button
-        class="cancel-button"
+        class="cancel"
         onclick="closeDeleteModal()"
       >
         Anuluj
       </button>
 
       <button
-        id="confirmDeleteButton"
-        class="confirm-delete"
-        onclick="confirmDelete()"
+        id="confirmDelete"
+        class="confirm"
+        onclick="deletePoll()"
       >
-        Usuń ankietę
+        Usuń
       </button>
 
     </div>
@@ -847,15 +770,16 @@
 <script>
 
 
-/* ==================================================
+/* =====================================================
    SUPABASE
-================================================== */
+===================================================== */
 
 const SUPABASE_URL =
   "https://hvloevnsrbfmmrkohzxe.supabase.co";
 
 const SUPABASE_KEY =
   "sb_publishable__iN5fmthHgtL_WfMM08sUw_7PCFKJgl";
+
 
 const supabaseClient =
   supabase.createClient(
@@ -864,14 +788,17 @@ const supabaseClient =
   );
 
 
-/* ==================================================
-   USER ID
-================================================== */
+/* =====================================================
+   IDENTYFIKATOR
+===================================================== */
 
 function getUserId() {
 
   let id =
-    localStorage.getItem("voter_id");
+    localStorage.getItem(
+      "voter_id"
+    );
+
 
   if (!id) {
 
@@ -885,54 +812,72 @@ function getUserId() {
 
   }
 
+
   return id;
 }
 
 
-const currentUserId =
+const userId =
   getUserId();
 
 
-/* ==================================================
+/* =====================================================
    MESSAGE
-================================================== */
+===================================================== */
 
 function showMessage(
-  message,
+  text,
   type = "error"
 ) {
 
-  const container =
-    document.getElementById("message");
+  const box =
+    document.getElementById(
+      "message"
+    );
 
-  container.innerHTML = `
-    <div class="message ${type}">
-      ${escapeHtml(message)}
-    </div>
-  `;
 
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
+  box.innerHTML = "";
+
+
+  const message =
+    document.createElement(
+      "div"
+    );
+
+
+  message.className =
+    `message ${type}`;
+
+
+  message.textContent =
+    text;
+
+
+  box.appendChild(
+    message
+  );
+
 
   setTimeout(() => {
 
-    container.innerHTML = "";
+    box.innerHTML = "";
 
   }, 4500);
 
 }
 
 
-/* ==================================================
+/* =====================================================
    LOAD POLLS
-================================================== */
+===================================================== */
 
 async function loadPolls() {
 
   const container =
-    document.getElementById("polls");
+    document.getElementById(
+      "polls"
+    );
+
 
   container.innerHTML = `
     <div class="card loading">
@@ -942,251 +887,1075 @@ async function loadPolls() {
   `;
 
 
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
+  try {
 
-      .from("polls")
+    /*
+     WAŻNE:
 
-      .select(`
-        id,
-        question,
-        created_at,
-        author_id,
-        options (
+     Nie pobieramy tutaj tabeli votes.
+
+     Dzięki temu RLS na votes nie może
+     zablokować całego ekranu.
+    */
+
+    const {
+      data: polls,
+      error: pollsError
+    } =
+      await supabaseClient
+
+        .from("polls")
+
+        .select(`
           id,
-          text,
-          votes
-        )
-      `)
+          question,
+          created_at,
+          author_id,
+          options (
+            id,
+            text,
+            votes
+          )
+        `)
 
-      .order(
-        "created_at",
-        {
-          ascending: false
-        }
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
+
+
+    if (pollsError) {
+
+      throw pollsError;
+
+    }
+
+
+    /*
+     Osobne RPC do informacji,
+     gdzie aktualny użytkownik już głosował.
+    */
+
+    const {
+      data: votedRows,
+      error: votedError
+    } =
+      await supabaseClient
+
+        .rpc(
+          "get_voted_polls",
+          {
+            p_user_id:
+              userId
+          }
+        );
+
+
+    if (votedError) {
+
+      throw votedError;
+
+    }
+
+
+    const votedPolls =
+      new Set(
+        (votedRows || [])
+          .map(row =>
+            Number(row.poll_id)
+          )
       );
 
 
-  if (error) {
+    document.getElementById(
+      "pollCount"
+    ).textContent =
+      polls.length;
 
-    console.error(error);
 
-    container.innerHTML = `
-      <div class="card empty">
-        <div class="empty-icon">⚠️</div>
+    if (!polls.length) {
 
-        <h3>Nie udało się wczytać ankiet</h3>
+      container.innerHTML = `
+        <div class="card empty">
 
-        <p>
-          ${escapeHtml(error.message)}
-        </p>
-      </div>
-    `;
+          <div class="empty-icon">
+            📊
+          </div>
 
-    return;
+          <h3>
+            Brak ankiet
+          </h3>
+
+          <p>
+            Utwórz pierwszą ankietę powyżej.
+          </p>
+
+        </div>
+      `;
+
+      return;
+
+    }
+
+
+    container.innerHTML = "";
+
+
+    polls.forEach(
+      poll => {
+
+        renderPoll(
+          poll,
+          votedPolls.has(
+            Number(poll.id)
+          )
+        );
+
+      }
+    );
+
   }
 
+  catch (error) {
 
-  document.getElementById(
-    "pollCount"
-  ).textContent = data.length;
+    console.error(
+      "LOAD POLLS ERROR:",
+      error
+    );
 
-
-  if (!data.length) {
 
     container.innerHTML = `
       <div class="card empty">
 
         <div class="empty-icon">
-          📊
+          ⚠️
         </div>
 
-        <h3>Brak ankiet</h3>
+        <h3>
+          Nie udało się załadować ankiet
+        </h3>
 
         <p>
-          Utwórz pierwszą ankietę powyżej.
+          ${escapeHtml(
+            error.message ||
+            "Nieznany błąd"
+          )}
         </p>
 
       </div>
     `;
 
+  }
+
+}
+
+
+/* =====================================================
+   RENDER POLL
+===================================================== */
+
+function renderPoll(
+  poll,
+  hasVoted
+) {
+
+  const container =
+    document.getElementById(
+      "polls"
+    );
+
+
+  const card =
+    document.createElement(
+      "article"
+    );
+
+
+  card.className =
+    "card poll";
+
+
+  const top =
+    document.createElement(
+      "div"
+    );
+
+
+  top.className =
+    "poll-top";
+
+
+  const question =
+    document.createElement(
+      "h2"
+    );
+
+
+  question.className =
+    "question";
+
+
+  question.textContent =
+    poll.question;
+
+
+  top.appendChild(
+    question
+  );
+
+
+  /*
+   Tylko autor dostaje
+   przycisk usuwania.
+  */
+
+  if (
+    poll.author_id === userId
+  ) {
+
+    const deleteButton =
+      document.createElement(
+        "button"
+      );
+
+
+    deleteButton.className =
+      "delete";
+
+
+    deleteButton.textContent =
+      "🗑️ Usuń";
+
+
+    deleteButton.onclick =
+      () => openDeleteModal(
+        poll.id
+      );
+
+
+    top.appendChild(
+      deleteButton
+    );
+
+  }
+
+
+  card.appendChild(
+    top
+  );
+
+
+  /* META */
+
+  const options =
+    poll.options || [];
+
+
+  const totalVotes =
+    options.reduce(
+      (sum, option) =>
+        sum +
+        Number(option.votes || 0),
+      0
+    );
+
+
+  const meta =
+    document.createElement(
+      "div"
+    );
+
+
+  meta.className =
+    "meta";
+
+
+  const date =
+    new Date(
+      poll.created_at
+    ).toLocaleDateString(
+      "pl-PL"
+    );
+
+
+  const dateBadge =
+    document.createElement(
+      "span"
+    );
+
+
+  dateBadge.className =
+    "badge";
+
+
+  dateBadge.textContent =
+    `📅 ${date}`;
+
+
+  meta.appendChild(
+    dateBadge
+  );
+
+
+  const voteBadge =
+    document.createElement(
+      "span"
+    );
+
+
+  voteBadge.className =
+    "badge";
+
+
+  voteBadge.textContent =
+    `🗳️ ${totalVotes} ${
+      pluralize(
+        totalVotes,
+        "głos",
+        "głosy",
+        "głosów"
+      )
+    }`;
+
+
+  meta.appendChild(
+    voteBadge
+  );
+
+
+  if (hasVoted) {
+
+    const votedBadge =
+      document.createElement(
+        "span"
+      );
+
+
+    votedBadge.className =
+      "badge voted";
+
+
+    votedBadge.textContent =
+      "✓ Zagłosowano";
+
+
+    meta.appendChild(
+      votedBadge
+    );
+
+  }
+
+
+  card.appendChild(
+    meta
+  );
+
+
+  /* OPTIONS */
+
+  options.forEach(
+    (option, index) => {
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+
+      row.className =
+        "option";
+
+
+      const button =
+        document.createElement(
+          "button"
+        );
+
+
+      button.className =
+        "vote";
+
+
+      button.disabled =
+        hasVoted;
+
+
+      const optionVotes =
+        Number(
+          option.votes || 0
+        );
+
+
+      const percentage =
+        totalVotes > 0
+          ? Math.round(
+              optionVotes /
+              totalVotes *
+              100
+            )
+          : 0;
+
+
+      const progress =
+        document.createElement(
+          "div"
+        );
+
+
+      progress.className =
+        "progress";
+
+
+      progress.style.width =
+        `${percentage}%`;
+
+
+      const content =
+        document.createElement(
+          "div"
+        );
+
+
+      content.className =
+        "vote-content";
+
+
+      const text =
+        document.createElement(
+          "span"
+        );
+
+
+      text.className =
+        "option-text";
+
+
+      text.textContent =
+        option.text;
+
+
+      const percent =
+        document.createElement(
+          "span"
+        );
+
+
+      percent.className =
+        "percent";
+
+
+      percent.textContent =
+        `${percentage}%`;
+
+
+      content.appendChild(
+        text
+      );
+
+
+      content.appendChild(
+        percent
+      );
+
+
+      button.appendChild(
+        progress
+      );
+
+
+      button.appendChild(
+        content
+      );
+
+
+      if (!hasVoted) {
+
+        button.onclick =
+          () => vote(
+            poll.id,
+            option.id
+          );
+
+      }
+
+
+      row.appendChild(
+        button
+      );
+
+
+      const info =
+        document.createElement(
+          "div"
+        );
+
+
+      info.className =
+        "option-info";
+
+
+      info.innerHTML = `
+        <span>
+          ${optionVotes}
+          ${pluralize(
+            optionVotes,
+            "głos",
+            "głosy",
+            "głosów"
+          )}
+        </span>
+
+        <span>
+          Odpowiedź ${index + 1}
+        </span>
+      `;
+
+
+      row.appendChild(
+        info
+      );
+
+
+      card.appendChild(
+        row
+      );
+
+    }
+  );
+
+
+  container.appendChild(
+    card
+  );
+
+}
+
+
+/* =====================================================
+   CREATE POLL
+===================================================== */
+
+async function createPoll() {
+
+  const button =
+    document.getElementById(
+      "createButton"
+    );
+
+
+  const question =
+    document
+      .getElementById("question")
+      .value
+      .trim();
+
+
+  const options = [
+
+    document
+      .getElementById("option1")
+      .value
+      .trim(),
+
+    document
+      .getElementById("option2")
+      .value
+      .trim(),
+
+    document
+      .getElementById("option3")
+      .value
+      .trim(),
+
+    document
+      .getElementById("option4")
+      .value
+      .trim()
+
+  ].filter(Boolean);
+
+
+  if (!question) {
+
+    showMessage(
+      "Wpisz pytanie ankiety."
+    );
+
+    return;
+
+  }
+
+
+  if (options.length < 2) {
+
+    showMessage(
+      "Dodaj przynajmniej 2 odpowiedzi."
+    );
+
+    return;
+
+  }
+
+
+  button.disabled =
+    true;
+
+
+    button.textContent = "Tworzenie...";
+
+  try {
+
+    /*
+     * Tworzymy ankietę.
+     * author_id zapisujemy jako identyfikator
+     * przeglądarki użytkownika.
+     */
+    const {
+      data: poll,
+      error: pollError
+    } = await supabaseClient
+      .from("polls")
+      .insert({
+        question: question,
+        author_id: userId
+      })
+      .select()
+      .single();
+
+    if (pollError) {
+      throw pollError;
+    }
+
+    /*
+     * Tworzymy odpowiedzi.
+     */
+    const optionRows = options.map(text => ({
+      poll_id: poll.id,
+      text: text,
+      votes: 0
+    }));
+
+    const {
+      error: optionError
+    } = await supabaseClient
+      .from("options")
+      .insert(optionRows);
+
+    if (optionError) {
+
+      /*
+       * Jeśli dodanie odpowiedzi się nie udało,
+       * próbujemy usunąć utworzoną ankietę.
+       */
+      await supabaseClient
+        .from("polls")
+        .delete()
+        .eq("id", poll.id);
+
+      throw optionError;
+    }
+
+    /*
+     * Czyścimy formularz.
+     */
+    document.getElementById("question").value = "";
+    document.getElementById("option1").value = "";
+    document.getElementById("option2").value = "";
+    document.getElementById("option3").value = "";
+    document.getElementById("option4").value = "";
+
+    showMessage(
+      "Ankieta została utworzona!",
+      "success"
+    );
+
+    /*
+     * Odświeżamy listę ankiet.
+     */
+    await loadPolls();
+
+    /*
+     * Przewijamy stronę do listy ankiet.
+     */
+    document.getElementById("polls").scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+  } catch (error) {
+
+    console.error(
+      "CREATE POLL ERROR:",
+      error
+    );
+
+    showMessage(
+      error.message ||
+      "Nie udało się utworzyć ankiety."
+    );
+
+  } finally {
+
+    button.disabled = false;
+    button.textContent = "＋ Utwórz ankietę";
+
+  }
+
+}
+
+
+/* =====================================================
+   VOTE
+===================================================== */
+
+async function vote(
+  pollId,
+  optionId
+) {
+
+  try {
+
+    /*
+     * Najpierw zapisujemy głos.
+     *
+     * UNIQUE(poll_id, user_id)
+     * w tabeli votes powinien zabezpieczać
+     * przed wielokrotnym głosowaniem.
+     */
+    const {
+      error: voteError
+    } = await supabaseClient
+      .from("votes")
+      .insert({
+        poll_id: pollId,
+        option_id: optionId,
+        user_id: userId
+      });
+
+    if (voteError) {
+
+      if (
+        voteError.code === "23505"
+      ) {
+
+        showMessage(
+          "Na tę ankietę już głosowałeś."
+        );
+
+        await loadPolls();
+
+        return;
+      }
+
+      throw voteError;
+    }
+
+
+    /*
+     * Pobieramy aktualną liczbę głosów.
+     */
+    const {
+      data: option,
+      error: optionError
+    } = await supabaseClient
+      .from("options")
+      .select("votes")
+      .eq("id", optionId)
+      .single();
+
+    if (optionError) {
+      throw optionError;
+    }
+
+
+    /*
+     * Zwiększamy liczbę głosów.
+     */
+    const {
+      error: updateError
+    } = await supabaseClient
+      .from("options")
+      .update({
+        votes:
+          Number(option.votes || 0) + 1
+      })
+      .eq("id", optionId);
+
+    if (updateError) {
+      throw updateError;
+    }
+
+
+    showMessage(
+      "Twój głos został zapisany!",
+      "success"
+    );
+
+
+    await loadPolls();
+
+  } catch (error) {
+
+    console.error(
+      "VOTE ERROR:",
+      error
+    );
+
+    showMessage(
+      error.message ||
+      "Nie udało się oddać głosu."
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   DELETE MODAL
+===================================================== */
+
+let pollToDelete = null;
+
+
+function openDeleteModal(
+  pollId
+) {
+
+  pollToDelete =
+    pollId;
+
+
+  document
+    .getElementById("deleteModal")
+    .classList.add("show");
+
+}
+
+
+function closeDeleteModal() {
+
+  pollToDelete =
+    null;
+
+
+  document
+    .getElementById("deleteModal")
+    .classList.remove("show");
+
+}
+
+
+/* =====================================================
+   DELETE POLL
+===================================================== */
+
+async function deletePoll() {
+
+  if (
+    pollToDelete === null
+  ) {
     return;
   }
 
 
-  /*
-   Pobieramy informację,
-   w których ankietach użytkownik
-   już głosował.
-  */
-
-  const {
-    data: votes
-  } =
-    await supabaseClient
-
-      .from("votes")
-
-      .select("poll_id")
-
-      .eq(
-        "user_id",
-        currentUserId
-      );
-
-
-  const votedPolls =
-    new Set(
-      (votes || []).map(
-        vote => vote.poll_id
-      )
+  const button =
+    document.getElementById(
+      "confirmDelete"
     );
 
 
-  container.innerHTML = "";
+  const id =
+    pollToDelete;
 
 
-  data.forEach(poll => {
-
-    const totalVotes =
-      (poll.options || [])
-        .reduce(
-          (sum, option) =>
-            sum + (option.votes || 0),
-          0
-        );
+  button.disabled =
+    true;
 
 
-    const hasVoted =
-      votedPolls.has(poll.id);
+  button.textContent =
+    "Usuwanie...";
 
 
-    const isAuthor =
-      poll.author_id === currentUserId;
-
-
-    const card =
-      document.createElement("article");
-
-    card.className =
-      "card poll-card";
-
-
-    const top =
-      document.createElement("div");
-
-    top.className =
-      "poll-top";
-
-
-    const title =
-      document.createElement("h2");
-
-    title.className =
-      "poll-title";
-
-    title.textContent =
-      poll.question;
-
-
-    top.appendChild(title);
-
+  try {
 
     /*
-     Tylko autor widzi przycisk usuwania.
-    */
+     * RLS w Supabase powinien pozwalać
+     * na DELETE tylko wtedy, gdy:
+     *
+     * author_id = aktualny userId
+     */
+    const {
+      error
+    } = await supabaseClient
+      .from("polls")
+      .delete()
+      .eq("id", id)
+      .eq("author_id", userId);
 
-    if (isAuthor) {
 
-      const deleteButton =
-        document.createElement("button");
-
-      deleteButton.className =
-        "delete-button";
-
-      deleteButton.innerHTML =
-        "🗑️ Usuń";
-
-      deleteButton.onclick =
-        () => openDeleteModal(
-          poll.id
-        );
-
-      top.appendChild(
-        deleteButton
-      );
-
+    if (error) {
+      throw error;
     }
 
 
-    card.appendChild(top);
+    closeDeleteModal();
 
 
-    const meta =
-      document.createElement("div");
-
-    meta.className =
-      "poll-meta";
-
-
-    const date =
-      new Date(
-        poll.created_at
-      ).toLocaleDateString(
-        "pl-PL"
-      );
+    showMessage(
+      "Ankieta została usunięta.",
+      "success"
+    );
 
 
-    meta.innerHTML = `
-      <span class="meta-badge">
-        📅 ${date}
-      </span>
+    await loadPolls();
 
-      <span class="meta-badge">
-        🗳️ ${totalVotes}
-        ${pluralize(
-          totalVotes,
-          "głos",
-          "głosy",
-          "głosów"
-        )}
-      </span>
+  } catch (error) {
 
-      ${
-        hasVoted
-          ? `
-            <span
-              class="meta-badge"
-              style="
-                background:#dcfce7;
-                color:#166534;
-              "
-            >
-              ✓ Zagłosowano
-            </span>
-          `
-          : ""
+    console.error(
+      "DELETE POLL ERROR:",
+      error
+    );
+
+    showMessage(
+      error.message ||
+      "Nie udało się usunąć ankiety."
+    );
+
+  } finally {
+
+    button.disabled =
+      false;
+
+    button.textContent =
+      "Usuń";
+
+  }
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHtml(
+  text
+) {
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+  div.textContent =
+    text ?? "";
+
+  return div.innerHTML;
+
+}
+
+
+/* =====================================================
+   LICZBA GŁOSÓW
+===================================================== */
+
+function pluralize(
+  number,
+  one,
+  few,
+  many
+) {
+
+  number =
+    Math.abs(
+      Number(number)
+    );
+
+
+  if (number === 1) {
+    return one;
+  }
+
+
+  const lastTwo =
+    number % 100;
+
+
+  const last =
+    number % 10;
+
+
+  if (
+    last >= 2 &&
+    last <= 4 &&
+    !(
+      lastTwo >= 12 &&
+      lastTwo <= 14
+    )
+  ) {
+
+    return few;
+
+  }
+
+
+  return many;
+
+}
+
+
+/* =====================================================
+   MODAL — KLIKNIĘCIE W TŁO
+===================================================== */
+
+document
+  .getElementById("deleteModal")
+  .addEventListener(
+    "click",
+    function(event) {
+
+      if (
+        event.target === this
+      ) {
+
+        closeDeleteModal();
+
       }
-    `;
+
+    }
+  );
 
 
-    card.appendChild(meta);
+/* =====================================================
+   ESC — ZAMKNIĘCIE MODALA
+===================================================== */
+
+document.addEventListener(
+  "keydown",
+  function(event) {
+
+    if (
+      event.key === "Escape"
+    ) {
+
+      closeDeleteModal();
+
+    }
+
+  }
+);
 
 
-    (poll.options || [])
-      .forEach(
-        (option, index) => {
+/* =====================================================
+   START
+===================================================== */
 
-          const row =
-            document.createElement(
-              "div"
-            );
+loadPolls();
 
-          row.className =
-            "option-row";
+</script>
 
-
-          con
+</body>
+</html>
