@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Głosowanie</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 25px;
+      text-align: center;
+    }
+
+    main {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 0 15px;
+    }
+
+    .box {
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,.08);
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 7px 0;
+      box-sizing: border-box;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+    }
+
+    button {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .option {
+      margin: 10px 0;
+    }
+
+    .empty {
+      text-align: center;
+      color: #6b7280;
+      padding: 30px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>🗳️ Głosowanie</h1>
+  <p>Twórz ankiety i głosuj razem z innymi</p>
+</header>
+
+<main>
+
+  <div class="box">
+    <h2>➕ Utwórz ankietę</h2>
+
+    <input
+      id="question"
+      placeholder="Wpisz pytanie ankiety"
+    >
+
+    <input
+      id="option1"
+      placeholder="Odpowiedź A"
+    >
+
+    <input
+      id="option2"
+      placeholder="Odpowiedź B"
+    >
+
+    <input
+      id="option3"
+      placeholder="Odpowiedź C"
+    >
+
+    <input
+      id="option4"
+      placeholder="Odpowiedź D"
+    >
+
+    <button onclick="createPoll()">
+      Utwórz ankietę
+    </button>
+  </div>
+
+  <div id="polls"></div>
+
+</main>
+
+<script>
+
+const SUPABASE_URL = "TUTAJ_WKLEJ_URL";
+const SUPABASE_KEY = "TUTAJ_WKLEJ_ANON_KEY";
+
+const supabaseClient =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+async function loadPolls() {
+
+  const { data, error } =
+    await supabaseClient
+      .from("polls")
+      .select(`
+        id,
+        question,
+        created_at,
+        options (
+          id,
+          text,
+          votes
+        )
+      `)
+      .order("created_at", {
+        ascending: false
+      });
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  const container =
+    document.getElementById("polls");
+
+  if (!data || data.length === 0) {
+
+    container.innerHTML = `
+      <div class="box empty">
+        <h2>Brak ankiet</h2>
+        <p>
+          Nie ma jeszcze żadnych ankiet.
+          Utwórz pierwszą!
+        </p>
+      </div>
+    `;
+
+    return;
+  }
+
+  container.innerHTML = "";
+
+  data.forEach(poll => {
+
+    let html = `
+      <div class="box">
+
+        <h2>${escapeHtml(poll.question)}</h2>
+
+        <div>
+    `;
+
+    poll.options.forEach(option => {
+
+      html += `
+        <div class="option">
+
+          <button
+            onclick="vote(${poll.id}, ${option.id})"
+          >
+            ${escapeHtml(option.text)}
+          </button>
+
+          <span>
+            ${option.votes} głosów
+          </span>
+
+        </div>
+      `;
+
+    });
+
+    html += `
+        </div>
+      </div>
+    `;
+
+    container.innerHTML += html;
+
+  });
+}
+
+
+async function createPoll() {
+
+  const question =
+    document.getElementById("question").value.trim();
+
+  const options = [
+    document.getElementById("option1").value.trim(),
+    document.getElementById("option2").value.trim(),
+    document.getElementById("option3").value.trim(),
+    document.getElementById("option4").value.trim()
+  ].filter(Boolean);
+
+  if (!question) {
+    alert("Wpisz pytanie.");
+    return;
+  }
+
+  if (options.length < 2) {
+    alert("Dodaj przynajmniej 2 odpowiedzi.");
+    return;
+  }
+
+  const { data, error } =
+    await supabaseClient
+      .from("polls")
+      .insert({
+        question: question
+      })
+      .select()
+      .single();
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  const optionRows =
+    options.map(text => ({
+      poll_id: data.id,
+      text: text
+    }));
+
+  const { error: optionError } =
+    await supabaseClient
+      .from("options")
+      .insert(optionRows);
+
+  if (optionError) {
+    alert(optionError.message);
+    return;
+  }
+
+  document.getElementById("question").value = "";
+  document.getElementById("option1").value = "";
+  document.getElementById("option2").value = "";
+  document.getElementById("option3").value = "";
+  document.getElementById("option4").value = "";
+
+  loadPolls();
+}
+
+
+async function vote(pollId, optionId) {
+
+  const userId =
+    getUserId();
+
+  const { error } =
+    await supabaseClient
+      .from("votes")
+      .insert({
+        poll_id: pollId,
+        user_id: userId
+      });
+
+  if (error) {
+
+    if (error.code === "23505") {
+
+      alert(
+        "Na tę ankietę już głosowałeś."
+      );
+
+    } else {
+
+      alert(error.message);
+
+    }
+
+    return;
+  }
+
+  const { data: option } =
+    await supabaseClient
+      .from("options")
+      .select("votes")
+      .eq("id", optionId)
+      .single();
+
+  await supabaseClient
+    .from("options")
+    .update({
+      votes: option.votes + 1
+    })
+    .eq("id", optionId);
+
+  loadPolls();
+}
+
+
+function getUserId() {
+
+  let id =
+    localStorage.getItem("voter_id");
+
+  if (!id) {
+
+    id =
+      crypto.randomUUID();
+
+    localStorage.setItem(
+      "voter_id",
+      id
+    );
+
+  }
+
+  return id;
+}
+
+
+function escapeHtml(text) {
+
+  const div =
+    document.createElement("div");
+
+  div.textContent = text;
+
+  return div.innerHTML;
+}
+
+
+loadPolls();
+
+</script>
+
+</body>
+</html>
