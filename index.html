@@ -1,14 +1,27 @@
 <!DOCTYPE html>
 <html lang="pl">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>Głosowanie</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+  ></script>
 
   <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -19,8 +32,17 @@
     header {
       background: #111827;
       color: white;
-      padding: 25px;
+      padding: 25px 15px;
       text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 10px;
+    }
+
+    header p {
+      margin: 0;
+      color: #d1d5db;
     }
 
     main {
@@ -34,16 +56,21 @@
       padding: 20px;
       border-radius: 15px;
       margin-bottom: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,.08);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, .08);
     }
 
     input {
       width: 100%;
       padding: 12px;
       margin: 7px 0;
-      box-sizing: border-box;
       border: 1px solid #d1d5db;
       border-radius: 8px;
+      font-size: 16px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #2563eb;
     }
 
     button {
@@ -61,8 +88,34 @@
       background: #1d4ed8;
     }
 
+    button:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .create-button {
+      width: 100%;
+      margin-top: 12px;
+    }
+
     .option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       margin: 10px 0;
+    }
+
+    .option button {
+      flex: 1;
+      text-align: left;
+      margin: 0;
+    }
+
+    .votes {
+      min-width: 80px;
+      color: #4b5563;
+      font-size: 14px;
+      text-align: right;
     }
 
     .empty {
@@ -70,59 +123,149 @@
       color: #6b7280;
       padding: 30px;
     }
+
+    .error {
+      background: #fee2e2;
+      color: #991b1b;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .success {
+      background: #dcfce7;
+      color: #166534;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .poll-title {
+      margin-top: 0;
+    }
+
+    .loading {
+      text-align: center;
+      color: #6b7280;
+      padding: 20px;
+    }
+
+    @media (max-width: 600px) {
+
+      .option {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .votes {
+        text-align: left;
+      }
+
+    }
+
   </style>
+
 </head>
+
 
 <body>
 
 <header>
+
   <h1>🗳️ Głosowanie</h1>
-  <p>Twórz ankiety i głosuj razem z innymi</p>
+
+  <p>
+    Twórz ankiety i głosuj razem z innymi
+  </p>
+
 </header>
+
 
 <main>
 
+  <div id="message"></div>
+
+
+  <!-- TWORZENIE ANKIETY -->
+
   <div class="box">
+
     <h2>➕ Utwórz ankietę</h2>
 
     <input
       id="question"
+      type="text"
+      maxlength="200"
       placeholder="Wpisz pytanie ankiety"
     >
 
     <input
       id="option1"
+      type="text"
+      maxlength="100"
       placeholder="Odpowiedź A"
     >
 
     <input
       id="option2"
+      type="text"
+      maxlength="100"
       placeholder="Odpowiedź B"
     >
 
     <input
       id="option3"
+      type="text"
+      maxlength="100"
       placeholder="Odpowiedź C"
     >
 
     <input
       id="option4"
+      type="text"
+      maxlength="100"
       placeholder="Odpowiedź D"
     >
 
-    <button onclick="createPoll()">
+    <button
+      id="createButton"
+      class="create-button"
+      onclick="createPoll()"
+    >
       Utwórz ankietę
     </button>
+
   </div>
 
-  <div id="polls"></div>
+
+  <!-- ANKIETY -->
+
+  <div id="polls">
+
+    <div class="loading">
+      Ładowanie ankiet...
+    </div>
+
+  </div>
 
 </main>
 
+
 <script>
 
-const SUPABASE_URL = "https://hvloevnsrbfmmrkohzxe.supabase.co";
-const SUPABASE_KEY = "sb_publishable__iN5fmthHgtL_WfMM08sUw_7PCFKJgl";";
+
+/*
+====================================================
+SUPABASE
+====================================================
+*/
+
+const SUPABASE_URL =
+  "https://hvloevnsrbfmmrkohzxe.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable__iN5fmthHgtL_WfMM08sUw_7PCFKJgl";
+
 
 const supabaseClient =
   supabase.createClient(
@@ -131,11 +274,95 @@ const supabaseClient =
   );
 
 
+/*
+====================================================
+IDENTYFIKATOR UŻYTKOWNIKA
+====================================================
+
+Tworzymy identyfikator dla przeglądarki.
+
+Dzięki temu:
+- użytkownik dostaje stały ID,
+- nie może oddać drugiego głosu
+  w tej samej ankiecie,
+- baza dodatkowo pilnuje UNIQUE(poll_id, user_id).
+*/
+
+function getUserId() {
+
+  let userId =
+    localStorage.getItem("voter_id");
+
+  if (!userId) {
+
+    userId =
+      crypto.randomUUID();
+
+    localStorage.setItem(
+      "voter_id",
+      userId
+    );
+
+  }
+
+  return userId;
+}
+
+
+/*
+====================================================
+KOMUNIKATY
+====================================================
+*/
+
+function showMessage(
+  message,
+  type = "error"
+) {
+
+  const container =
+    document.getElementById("message");
+
+  container.innerHTML = `
+    <div class="${type}">
+      ${escapeHtml(message)}
+    </div>
+  `;
+
+  setTimeout(() => {
+
+    container.innerHTML = "";
+
+  }, 4000);
+}
+
+
+/*
+====================================================
+WCZYTYWANIE ANKIET
+====================================================
+*/
+
 async function loadPolls() {
 
-  const { data, error } =
+  const container =
+    document.getElementById("polls");
+
+  container.innerHTML = `
+    <div class="loading">
+      Ładowanie ankiet...
+    </div>
+  `;
+
+
+  const {
+    data,
+    error
+  } =
     await supabaseClient
+
       .from("polls")
+
       .select(`
         id,
         question,
@@ -146,221 +373,533 @@ async function loadPolls() {
           votes
         )
       `)
-      .order("created_at", {
-        ascending: false
-      });
+
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
 
   if (error) {
-    console.error(error);
+
+    console.error(
+      "Błąd ładowania:",
+      error
+    );
+
+    container.innerHTML = `
+      <div class="box error">
+        Nie udało się wczytać ankiet.
+      </div>
+    `;
+
     return;
   }
 
-  const container =
-    document.getElementById("polls");
 
   if (!data || data.length === 0) {
 
     container.innerHTML = `
       <div class="box empty">
+
         <h2>Brak ankiet</h2>
+
         <p>
           Nie ma jeszcze żadnych ankiet.
           Utwórz pierwszą!
         </p>
+
       </div>
     `;
 
     return;
   }
+
 
   container.innerHTML = "";
 
+
   data.forEach(poll => {
 
-    let html = `
-      <div class="box">
+    const box =
+      document.createElement("div");
 
-        <h2>${escapeHtml(poll.question)}</h2>
+    box.className = "box";
 
-        <div>
-    `;
+
+    const title =
+      document.createElement("h2");
+
+    title.className = "poll-title";
+
+    title.textContent =
+      poll.question;
+
+
+    box.appendChild(title);
+
+
+    if (
+      !poll.options ||
+      poll.options.length === 0
+    ) {
+
+      const empty =
+        document.createElement("p");
+
+      empty.textContent =
+        "Brak odpowiedzi.";
+
+      box.appendChild(empty);
+
+      container.appendChild(box);
+
+      return;
+    }
+
 
     poll.options.forEach(option => {
 
-      html += `
-        <div class="option">
+      const row =
+        document.createElement("div");
 
-          <button
-            onclick="vote(${poll.id}, ${option.id})"
-          >
-            ${escapeHtml(option.text)}
-          </button>
+      row.className = "option";
 
-          <span>
-            ${option.votes} głosów
-          </span>
 
-        </div>
-      `;
+      const button =
+        document.createElement("button");
+
+      button.textContent =
+        option.text;
+
+
+      button.onclick =
+        () => vote(
+          poll.id,
+          option.id,
+          button
+        );
+
+
+      const votes =
+        document.createElement("span");
+
+      votes.className = "votes";
+
+      votes.textContent =
+        `${option.votes || 0} głosów`;
+
+
+      row.appendChild(button);
+
+      row.appendChild(votes);
+
+      box.appendChild(row);
 
     });
 
-    html += `
-        </div>
-      </div>
-    `;
 
-    container.innerHTML += html;
+    container.appendChild(box);
 
   });
+
 }
 
+
+/*
+====================================================
+TWORZENIE ANKIETY
+====================================================
+*/
 
 async function createPoll() {
 
+  const button =
+    document.getElementById(
+      "createButton"
+    );
+
+
   const question =
-    document.getElementById("question").value.trim();
+    document
+      .getElementById("question")
+      .value
+      .trim();
+
 
   const options = [
-    document.getElementById("option1").value.trim(),
-    document.getElementById("option2").value.trim(),
-    document.getElementById("option3").value.trim(),
-    document.getElementById("option4").value.trim()
+
+    document
+      .getElementById("option1")
+      .value
+      .trim(),
+
+    document
+      .getElementById("option2")
+      .value
+      .trim(),
+
+    document
+      .getElementById("option3")
+      .value
+      .trim(),
+
+    document
+      .getElementById("option4")
+      .value
+      .trim()
+
   ].filter(Boolean);
 
+
+  /*
+  WALIDACJA
+  */
+
   if (!question) {
-    alert("Wpisz pytanie.");
+
+    showMessage(
+      "Wpisz pytanie."
+    );
+
     return;
   }
+
 
   if (options.length < 2) {
-    alert("Dodaj przynajmniej 2 odpowiedzi.");
+
+    showMessage(
+      "Dodaj przynajmniej 2 odpowiedzi."
+    );
+
     return;
   }
 
-  const { data, error } =
-    await supabaseClient
-      .from("polls")
-      .insert({
-        question: question
-      })
-      .select()
-      .single();
 
-  if (error) {
-    alert(error.message);
-    return;
-  }
+  /*
+  BLOKUJEMY PRZYCISK
+  */
 
-  const optionRows =
-    options.map(text => ({
-      poll_id: data.id,
-      text: text
-    }));
+  button.disabled = true;
 
-  const { error: optionError } =
-    await supabaseClient
-      .from("options")
-      .insert(optionRows);
-
-  if (optionError) {
-    alert(optionError.message);
-    return;
-  }
-
-  document.getElementById("question").value = "";
-  document.getElementById("option1").value = "";
-  document.getElementById("option2").value = "";
-  document.getElementById("option3").value = "";
-  document.getElementById("option4").value = "";
-
-  loadPolls();
-}
+  button.textContent =
+    "Tworzenie...";
 
 
-async function vote(pollId, optionId) {
+  try {
 
-  const userId =
-    getUserId();
+    /*
+    TWORZYMY ANKIETĘ
+    */
 
-  const { error } =
-    await supabaseClient
-      .from("votes")
-      .insert({
-        poll_id: pollId,
-        user_id: userId
-      });
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
 
-  if (error) {
+        .from("polls")
 
-    if (error.code === "23505") {
+        .insert({
+          question: question
+        })
 
-      alert(
-        "Na tę ankietę już głosowałeś."
+        .select()
+
+        .single();
+
+
+    if (error) {
+
+      console.error(error);
+
+      throw new Error(
+        error.message
       );
-
-    } else {
-
-      alert(error.message);
-
     }
 
-    return;
+
+    /*
+    TWORZYMY ODPOWIEDZI
+    */
+
+    const optionRows =
+      options.map(text => ({
+
+        poll_id:
+          data.id,
+
+        text:
+          text,
+
+        votes:
+          0
+
+      }));
+
+
+    const {
+      error: optionError
+    } =
+      await supabaseClient
+
+        .from("options")
+
+        .insert(optionRows);
+
+
+    if (optionError) {
+
+      console.error(
+        optionError
+      );
+
+      throw new Error(
+        optionError.message
+      );
+    }
+
+
+    /*
+    CZYSZCZENIE FORMULARZA
+    */
+
+    document
+      .getElementById("question")
+      .value = "";
+
+
+    document
+      .getElementById("option1")
+      .value = "";
+
+
+    document
+      .getElementById("option2")
+      .value = "";
+
+
+    document
+      .getElementById("option3")
+      .value = "";
+
+
+    document
+      .getElementById("option4")
+      .value = "";
+
+
+    showMessage(
+      "Ankieta została utworzona.",
+      "success"
+    );
+
+
+    await loadPolls();
+
   }
 
-  const { data: option } =
-    await supabaseClient
-      .from("options")
-      .select("votes")
-      .eq("id", optionId)
-      .single();
+  catch (error) {
 
-  await supabaseClient
-    .from("options")
-    .update({
-      votes: option.votes + 1
-    })
-    .eq("id", optionId);
+    console.error(
+      "Błąd tworzenia ankiety:",
+      error
+    );
 
-  loadPolls();
-}
-
-
-function getUserId() {
-
-  let id =
-    localStorage.getItem("voter_id");
-
-  if (!id) {
-
-    id =
-      crypto.randomUUID();
-
-    localStorage.setItem(
-      "voter_id",
-      id
+    showMessage(
+      error.message ||
+      "Nie udało się utworzyć ankiety."
     );
 
   }
 
-  return id;
+  finally {
+
+    button.disabled = false;
+
+    button.textContent =
+      "Utwórz ankietę";
+
+  }
+
 }
 
+
+/*
+====================================================
+GŁOSOWANIE
+====================================================
+*/
+
+async function vote(
+  pollId,
+  optionId,
+  button
+) {
+
+  /*
+  Zabezpieczenie przed
+  wielokrotnym kliknięciem.
+  */
+
+  button.disabled = true;
+
+  button.textContent =
+    "Głosowanie...";
+
+
+  const userId =
+    getUserId();
+
+
+  try {
+
+    /*
+    GŁOS JEST DODAWANY PRZEZ
+    FUNKCJĘ SQL.
+
+    Funkcja:
+    - sprawdza, czy użytkownik już głosował,
+    - sprawdza poprawność odpowiedzi,
+    - zapisuje głos,
+    - zwiększa licznik atomowo.
+    */
+
+    const {
+      error
+    } =
+      await supabaseClient
+
+        .rpc(
+          "add_vote",
+          {
+            p_poll_id:
+              pollId,
+
+            p_option_id:
+              optionId,
+
+            p_user_id:
+              userId
+          }
+        );
+
+
+    if (error) {
+
+      console.error(
+        "Błąd głosowania:",
+        error
+      );
+
+
+      /*
+      Użytkownik już głosował.
+      */
+
+      if (
+        error.message
+          .includes("ALREADY_VOTED")
+      ) {
+
+        showMessage(
+          "Na tę ankietę już głosowałeś."
+        );
+
+      }
+
+      else if (
+        error.message
+          .includes("INVALID_OPTION")
+      ) {
+
+        showMessage(
+          "Wybrana odpowiedź jest nieprawidłowa."
+        );
+
+      }
+
+      else {
+
+        showMessage(
+          error.message ||
+          "Nie udało się oddać głosu."
+        );
+
+      }
+
+
+      return;
+    }
+
+
+    /*
+    SUKCES
+    */
+
+    showMessage(
+      "Twój głos został zapisany.",
+      "success"
+    );
+
+
+    await loadPolls();
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "Wystąpił błąd podczas głosowania."
+    );
+
+  }
+
+  finally {
+
+    button.disabled = false;
+
+  }
+
+}
+
+
+/*
+====================================================
+BEZPIECZNE WYŚWIETLANIE TEKSTU
+====================================================
+*/
 
 function escapeHtml(text) {
 
   const div =
     document.createElement("div");
 
-  div.textContent = text;
+  div.textContent =
+    text;
 
   return div.innerHTML;
+
 }
 
 
+/*
+====================================================
+START
+====================================================
+*/
+
+getUserId();
+
 loadPolls();
+
 
 </script>
 
 </body>
+
 </html>
