@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -10,10 +9,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
 :root {
   --bg: #f4f6fb;
-  --card: #ffffff;
+  --card: #fff;
   --text: #111827;
   --muted: #6b7280;
   --border: #e5e7eb;
@@ -40,18 +38,13 @@ input {
 }
 
 header {
-  padding: 55px 20px 90px;
-  color: white;
+  padding: 50px 20px 90px;
   text-align: center;
-  background: linear-gradient(
-    135deg,
-    #111827,
-    #312e81,
-    #4f46e5
-  );
+  color: white;
+  background: linear-gradient(135deg, #111827, #312e81, #4f46e5);
 }
 
-header .icon {
+.logo {
   width: 70px;
   height: 70px;
   margin: 0 auto 18px;
@@ -61,49 +54,50 @@ header .icon {
   justify-content: center;
 
   border-radius: 22px;
-  background: rgba(255,255,255,.14);
+  background: rgba(255,255,255,.15);
 
   font-size: 34px;
 }
 
 header h1 {
   margin: 0;
-  font-size: clamp(36px, 8vw, 60px);
+  font-size: clamp(36px, 8vw, 58px);
 }
 
 header p {
-  max-width: 600px;
   margin: 14px auto 0;
-  color: rgba(255,255,255,.78);
+  max-width: 600px;
+
+  color: rgba(255,255,255,.8);
   line-height: 1.6;
 }
 
 main {
-  width: min(900px, calc(100% - 28px));
+  width: min(900px, calc(100% - 24px));
   margin: -45px auto 50px;
 }
 
 .card {
   background: var(--card);
-  border-radius: 22px;
+  border-radius: 20px;
   box-shadow: 0 10px 35px rgba(15,23,42,.08);
 }
 
 .create {
-  padding: 26px;
+  padding: 25px;
   margin-bottom: 30px;
 }
 
-.title-row {
+.title {
   display: flex;
   align-items: center;
-  gap: 13px;
-  margin-bottom: 22px;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
 .title-icon {
-  width: 44px;
-  height: 44px;
+  width: 45px;
+  height: 45px;
 
   display: flex;
   align-items: center;
@@ -117,43 +111,37 @@ main {
   font-size: 23px;
 }
 
-.title-row h2 {
+.title h2 {
   margin: 0;
-  font-size: 22px;
 }
 
-.title-row p {
-  margin: 3px 0 0;
+.title p {
+  margin: 4px 0 0;
   color: var(--muted);
   font-size: 13px;
 }
 
 input {
   width: 100%;
-  padding: 14px 15px;
+  padding: 14px;
   margin-bottom: 10px;
 
   border: 1px solid var(--border);
   border-radius: 12px;
 
   outline: none;
-  transition: .2s;
 }
 
 input:focus {
   border-color: #818cf8;
-
-  box-shadow:
-    0 0 0 4px
-    rgba(99,102,241,.12);
+  box-shadow: 0 0 0 4px rgba(99,102,241,.12);
 }
 
 .label {
   display: block;
-  margin: 10px 0 9px;
+  margin: 10px 0;
 
   color: #374151;
-
   font-size: 13px;
   font-weight: bold;
 }
@@ -165,26 +153,12 @@ input:focus {
   border: 0;
   border-radius: 12px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #4f46e5,
-      #6366f1
-    );
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
 
   color: white;
   font-weight: bold;
 
   cursor: pointer;
-}
-
-.create-button:hover {
-  background:
-    linear-gradient(
-      135deg,
-      #4338ca,
-      #4f46e5
-    );
 }
 
 .create-button:disabled {
@@ -199,19 +173,17 @@ input:focus {
 .message {
   padding: 14px 16px;
   border-radius: 12px;
-
-  font-size: 14px;
-  font-weight: 600;
+  font-weight: bold;
 }
 
 .message.success {
-  color: #166534;
   background: #dcfce7;
+  color: #166534;
 }
 
 .message.error {
-  color: #991b1b;
   background: #fee2e2;
+  color: #991b1b;
 }
 
 .polls-header {
@@ -224,7 +196,6 @@ input:focus {
 
 .polls-header h2 {
   margin: 0;
-  font-size: 22px;
 }
 
 .count {
@@ -240,7 +211,7 @@ input:focus {
 }
 
 .poll {
-  padding: 24px;
+  padding: 23px;
   margin-bottom: 17px;
 }
 
@@ -248,7 +219,6 @@ input:focus {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-
   gap: 15px;
 }
 
@@ -286,17 +256,15 @@ input:focus {
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
-
   margin: 10px 0 20px;
 }
 
 .badge {
-  padding: 5px 8px;
+  padding: 6px 9px;
 
-  border-radius: 7px;
+  border-radius: 8px;
 
   background: #f3f4f6;
-
   color: var(--muted);
 
   font-size: 12px;
@@ -316,9 +284,9 @@ input:focus {
   overflow: hidden;
 
   width: 100%;
-  min-height: 52px;
+  min-height: 53px;
 
-  padding: 14px 15px;
+  padding: 14px;
 
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -328,13 +296,10 @@ input:focus {
   text-align: left;
 
   cursor: pointer;
-
-  transition: .2s;
 }
 
 .vote:hover:not(:disabled) {
   border-color: #818cf8;
-  transform: translateY(-1px);
 }
 
 .vote:disabled {
@@ -343,13 +308,11 @@ input:focus {
 
 .progress {
   position: absolute;
-  inset: 0 auto 0 0;
-
-  width: 0;
+  left: 0;
+  top: 0;
+  bottom: 0;
 
   background: #eef2ff;
-
-  transition: width .5s;
 }
 
 .vote-content {
@@ -361,7 +324,7 @@ input:focus {
 
   gap: 10px;
 
-  font-weight: 600;
+  font-weight: bold;
 }
 
 .option-text {
@@ -369,9 +332,8 @@ input:focus {
 }
 
 .percent {
-  flex-shrink: 0;
   color: var(--muted);
-  font-size: 13px;
+  flex-shrink: 0;
 }
 
 .option-info {
@@ -385,9 +347,30 @@ input:focus {
   font-size: 12px;
 }
 
+.loading,
 .empty {
-  padding: 55px 20px;
+  padding: 50px 20px;
   text-align: center;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+
+  margin: 0 auto 13px;
+
+  border: 3px solid #e5e7eb;
+  border-top-color: var(--primary);
+
+  border-radius: 50%;
+
+  animation: spin .7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .empty-icon {
@@ -404,32 +387,6 @@ input:focus {
   color: var(--muted);
 }
 
-.loading {
-  padding: 50px;
-  text-align: center;
-  color: var(--muted);
-}
-
-.spinner {
-  width: 30px;
-  height: 30px;
-
-  margin: 0 auto 12px;
-
-  border: 3px solid #e5e7eb;
-  border-top-color: var(--primary);
-
-  border-radius: 50%;
-
-  animation: spin .7s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .modal {
   position: fixed;
   inset: 0;
@@ -443,7 +400,6 @@ input:focus {
   padding: 20px;
 
   background: rgba(15,23,42,.55);
-
   backdrop-filter: blur(4px);
 }
 
@@ -452,26 +408,20 @@ input:focus {
 }
 
 .modal-box {
-  width: min(420px,100%);
+  width: min(420px, 100%);
 
   padding: 25px;
 
   border-radius: 20px;
 
   background: white;
-
-  box-shadow:
-    0 25px 70px
-    rgba(0,0,0,.25);
 }
 
 .modal-box h3 {
-  margin: 0 0 8px;
+  margin-top: 0;
 }
 
 .modal-box p {
-  margin: 0;
-
   color: var(--muted);
   line-height: 1.5;
 }
@@ -479,13 +429,11 @@ input:focus {
 .modal-buttons {
   display: flex;
   gap: 10px;
-
-  margin-top: 22px;
+  margin-top: 20px;
 }
 
 .modal-buttons button {
   flex: 1;
-
   padding: 12px;
 
   border-radius: 10px;
@@ -507,11 +455,8 @@ input:focus {
 
 footer {
   padding: 20px;
-
   text-align: center;
-
   color: #9ca3af;
-
   font-size: 12px;
 }
 
@@ -522,12 +467,12 @@ footer {
   }
 
   main {
-    width: calc(100% - 20px);
+    width: calc(100% - 18px);
   }
 
   .create,
   .poll {
-    padding: 19px;
+    padding: 18px;
   }
 
   .poll-top {
@@ -538,16 +483,7 @@ footer {
     align-self: flex-end;
   }
 
-  .question {
-    font-size: 19px;
-  }
-
-  .modal-buttons {
-    flex-direction: column-reverse;
-  }
-
 }
-
 </style>
 </head>
 
@@ -555,42 +491,44 @@ footer {
 
 <header>
 
-  <div class="icon">
+  <div class="logo">
     🗳️
   </div>
 
   <h1>Głosowanie</h1>
 
   <p>
-    Twórz ankiety, głosuj i sprawdzaj
-    rzeczywiste wyniki głosowania.
+    Twórz ankiety, głosuj i sprawdzaj wyniki.
   </p>
 
 </header>
+
 
 <main>
 
   <div id="message"></div>
 
+
+  <!-- TWORZENIE ANKIETY -->
+
   <section class="card create">
 
-    <div class="title-row">
+    <div class="title">
 
       <div class="title-icon">
         ＋
       </div>
 
       <div>
-
         <h2>Nowa ankieta</h2>
 
         <p>
           Utwórz pytanie i dodaj odpowiedzi.
         </p>
-
       </div>
 
     </div>
+
 
     <input
       id="question"
@@ -598,9 +536,11 @@ footer {
       placeholder="Wpisz pytanie ankiety"
     >
 
+
     <span class="label">
       Odpowiedzi
     </span>
+
 
     <input
       id="option1"
@@ -626,6 +566,7 @@ footer {
       placeholder="Odpowiedź D — opcjonalnie"
     >
 
+
     <button
       id="createButton"
       class="create-button"
@@ -635,6 +576,7 @@ footer {
     </button>
 
   </section>
+
 
   <div class="polls-header">
 
@@ -651,6 +593,7 @@ footer {
 
   </div>
 
+
   <div id="polls">
 
     <div class="card loading">
@@ -665,9 +608,13 @@ footer {
 
 </main>
 
+
 <footer>
   Głosowanie
 </footer>
+
+
+<!-- MODAL -->
 
 <div
   id="deleteModal"
@@ -681,8 +628,7 @@ footer {
     </h3>
 
     <p>
-      Ankieta, odpowiedzi i głosy zostaną
-      usunięte. Tej operacji nie można cofnąć.
+      Ankieta i jej odpowiedzi zostaną usunięte.
     </p>
 
     <div class="modal-buttons">
@@ -708,7 +654,12 @@ footer {
 
 </div>
 
+
 <script>
+
+/* =====================================================
+   SUPABASE
+===================================================== */
 
 const SUPABASE_URL =
   "https://hvloevnsrbfmmrkohzxe.supabase.co";
@@ -721,6 +672,11 @@ const supabaseClient =
     SUPABASE_URL,
     SUPABASE_KEY
   );
+
+
+/* =====================================================
+   UŻYTKOWNIK
+===================================================== */
 
 function getUserId() {
 
@@ -736,13 +692,78 @@ function getUserId() {
       "voter_id",
       id
     );
-
   }
 
   return id;
 }
 
-const userId = getUserId();
+
+const userId =
+  getUserId();
+
+
+/*
+ * Lokalnie zapamiętujemy ankiety,
+ * na które ta przeglądarka już głosowała.
+ *
+ * Samo zabezpieczenie przed drugim głosem
+ * nadal musi być w bazie UNIQUE(poll_id,user_id).
+ */
+
+function getVotedPolls() {
+
+  try {
+
+    return JSON.parse(
+      localStorage.getItem(
+        "voted_polls"
+      ) || "[]"
+    );
+
+  } catch {
+
+    return [];
+
+  }
+
+}
+
+
+function hasVoted(pollId) {
+
+  return getVotedPolls()
+    .includes(
+      String(pollId)
+    );
+
+}
+
+
+function rememberVote(pollId) {
+
+  const voted =
+    getVotedPolls();
+
+  const id =
+    String(pollId);
+
+  if (!voted.includes(id)) {
+
+    voted.push(id);
+
+    localStorage.setItem(
+      "voted_polls",
+      JSON.stringify(voted)
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   WIADOMOŚCI
+===================================================== */
 
 function showMessage(
   text,
@@ -750,48 +771,74 @@ function showMessage(
 ) {
 
   const box =
-    document.getElementById("message");
+    document.getElementById(
+      "message"
+    );
 
   box.innerHTML = "";
 
-  const message =
-    document.createElement("div");
+  const div =
+    document.createElement(
+      "div"
+    );
 
-  message.className =
-    `message ${type}`;
+  div.className =
+    "message " + type;
 
-  message.textContent =
+  div.textContent =
     text;
 
-  box.appendChild(message);
+  box.appendChild(div);
 
   setTimeout(() => {
+
     box.innerHTML = "";
-  }, 4500);
+
+  }, 4000);
+
 }
 
 
-/*
- * ŁADUJEMY ANKIETY ORAZ PRAWDZIWE GŁOSY
- * Z TABELI votes.
- */
+/* =====================================================
+   ŁADOWANIE ANKIET
+===================================================== */
+
 async function loadPolls() {
 
   const container =
-    document.getElementById("polls");
+    document.getElementById(
+      "polls"
+    );
+
 
   container.innerHTML = `
     <div class="card loading">
+
       <div class="spinner"></div>
+
       Ładowanie ankiet...
+
     </div>
   `;
 
+
   try {
 
+    /*
+     * WAŻNE:
+     *
+     * Pobieramy TYLKO polls + options.
+     *
+     * Nie pytamy tutaj tabeli votes.
+     * Nie używamy RPC.
+     * Nie ma więc możliwości,
+     * żeby RLS tabeli votes zatrzymał
+     * ładowanie strony.
+     */
+
     const {
-      data: polls,
-      error: pollsError
+      data,
+      error
     } =
       await supabaseClient
         .from("polls")
@@ -802,7 +849,8 @@ async function loadPolls() {
           author_id,
           options (
             id,
-            text
+            text,
+            votes
           )
         `)
         .order(
@@ -812,82 +860,16 @@ async function loadPolls() {
           }
         );
 
-    if (pollsError) {
-      throw pollsError;
+
+    if (error) {
+
+      throw error;
+
     }
 
 
-    /*
-     * Pobieramy wszystkie głosy.
-     *
-     * NIE używamy już options.votes.
-     * Dzięki temu liczby są liczone
-     * bezpośrednio z faktycznych rekordów votes.
-     */
-    const {
-      data: votes,
-      error: votesError
-    } =
-      await supabaseClient
-        .from("votes")
-        .select(`
-          poll_id,
-          option_id,
-          user_id
-        `);
-
-    if (votesError) {
-      throw votesError;
-    }
-
-
-    /*
-     * Grupujemy głosy według ankiety
-     * i odpowiedzi.
-     */
-    const voteMap =
-      new Map();
-
-    const votedPolls =
-      new Set();
-
-    (votes || []).forEach(
-      vote => {
-
-        const pollId =
-          String(vote.poll_id);
-
-        const optionId =
-          String(vote.option_id);
-
-        if (!voteMap.has(pollId)) {
-          voteMap.set(
-            pollId,
-            new Map()
-          );
-        }
-
-        const pollVotes =
-          voteMap.get(pollId);
-
-        pollVotes.set(
-          optionId,
-          (pollVotes.get(optionId) || 0) + 1
-        );
-
-        if (
-          String(vote.user_id) ===
-          String(userId)
-        ) {
-
-          votedPolls.add(
-            pollId
-          );
-
-        }
-
-      }
-    );
+    const polls =
+      data || [];
 
 
     document.getElementById(
@@ -896,7 +878,7 @@ async function loadPolls() {
       polls.length;
 
 
-    if (!polls.length) {
+    if (polls.length === 0) {
 
       container.innerHTML = `
         <div class="card empty">
@@ -917,6 +899,7 @@ async function loadPolls() {
       `;
 
       return;
+
     }
 
 
@@ -926,25 +909,19 @@ async function loadPolls() {
     polls.forEach(
       poll => {
 
-        renderPoll(
-          poll,
-          voteMap.get(
-            String(poll.id)
-          ) || new Map(),
-          votedPolls.has(
-            String(poll.id)
-          )
-        );
+        renderPoll(poll);
 
       }
     );
 
+
   } catch (error) {
 
     console.error(
-      "LOAD POLLS ERROR:",
+      "BŁĄD ŁADOWANIA:",
       error
     );
+
 
     container.innerHTML = `
       <div class="card empty">
@@ -960,7 +937,7 @@ async function loadPolls() {
         <p>
           ${escapeHtml(
             error.message ||
-            "Nieznany błąd"
+            "Wystąpił nieznany błąd."
           )}
         </p>
 
@@ -969,37 +946,43 @@ async function loadPolls() {
 
   }
 
-} <script>
+}
+
 
 /* =====================================================
-   RENDER ANKIETY
+   WYŚWIETLANIE ANKIETY
 ===================================================== */
 
-function renderPoll(
-  poll,
-  pollVotes,
-  hasVoted
-) {
+function renderPoll(poll) {
 
   const container =
-    document.getElementById("polls");
+    document.getElementById(
+      "polls"
+    );
+
 
   const card =
-    document.createElement("article");
+    document.createElement(
+      "article"
+    );
 
   card.className =
     "card poll";
 
 
   const top =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
   top.className =
     "poll-top";
 
 
   const question =
-    document.createElement("h2");
+    document.createElement(
+      "h2"
+    );
 
   question.className =
     "question";
@@ -1007,11 +990,14 @@ function renderPoll(
   question.textContent =
     poll.question;
 
-  top.appendChild(question);
+
+  top.appendChild(
+    question
+  );
 
 
   /*
-   * Autor może usunąć swoją ankietę.
+   * Tylko autorowi pokazujemy usuwanie.
    */
 
   if (
@@ -1020,7 +1006,9 @@ function renderPoll(
   ) {
 
     const deleteButton =
-      document.createElement("button");
+      document.createElement(
+        "button"
+      );
 
     deleteButton.className =
       "delete";
@@ -1036,48 +1024,64 @@ function renderPoll(
     top.appendChild(
       deleteButton
     );
+
   }
 
 
-  card.appendChild(top);
+  card.appendChild(
+    top
+  );
 
 
   const options =
-    poll.options || [];
+    Array.isArray(poll.options)
+      ? poll.options
+      : [];
 
 
   /*
-   * LICZBA GŁOSÓW JEST LICZONA
-   * WYŁĄCZNIE Z TABELI votes.
+   * LICZYMY PRAWDZIWĄ SUMĘ
+   * Z LICZNIKÓW W options.
    */
 
-  let totalVotes = 0;
+  const totalVotes =
+    options.reduce(
+      (sum, option) => {
 
+        return sum +
+          Math.max(
+            0,
+            Number(
+              option.votes || 0
+            )
+          );
 
-  options.forEach(
-    option => {
-
-      totalVotes +=
-        Number(
-          pollVotes.get(
-            String(option.id)
-          ) || 0
-        );
-
-    }
-  );
+      },
+      0
+    );
 
 
   /* META */
 
   const meta =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
 
   meta.className =
     "meta";
 
 
-  const date =
+  const dateBadge =
+    document.createElement(
+      "span"
+    );
+
+  dateBadge.className =
+    "badge";
+
+  dateBadge.textContent =
+    "📅 " +
     new Date(
       poll.created_at
     ).toLocaleDateString(
@@ -1085,45 +1089,46 @@ function renderPoll(
     );
 
 
-  const dateBadge =
-    document.createElement("span");
-
-  dateBadge.className =
-    "badge";
-
-  dateBadge.textContent =
-    `📅 ${date}`;
-
   meta.appendChild(
     dateBadge
   );
 
 
   const voteBadge =
-    document.createElement("span");
+    document.createElement(
+      "span"
+    );
 
   voteBadge.className =
     "badge";
 
   voteBadge.textContent =
-    `🗳️ ${totalVotes} ${
-      pluralize(
-        totalVotes,
-        "głos",
-        "głosy",
-        "głosów"
-      )
-    }`;
+    "🗳️ " +
+    totalVotes +
+    " " +
+    pluralize(
+      totalVotes,
+      "głos",
+      "głosy",
+      "głosów"
+    );
+
 
   meta.appendChild(
     voteBadge
   );
 
 
-  if (hasVoted) {
+  if (
+    hasVoted(
+      poll.id
+    )
+  ) {
 
     const votedBadge =
-      document.createElement("span");
+      document.createElement(
+        "span"
+      );
 
     votedBadge.className =
       "badge voted";
@@ -1138,7 +1143,9 @@ function renderPoll(
   }
 
 
-  card.appendChild(meta);
+  card.appendChild(
+    meta
+  );
 
 
   /* ODPOWIEDZI */
@@ -1146,66 +1153,91 @@ function renderPoll(
   options.forEach(
     (option, index) => {
 
+      const optionVotes =
+        Math.max(
+          0,
+          Number(
+            option.votes || 0
+          )
+        );
+
+
+      /*
+       * Jeżeli nie ma żadnych głosów,
+       * wszystkie procenty = 0%.
+       */
+
+      let percentage = 0;
+
+
+      if (
+        totalVotes > 0
+      ) {
+
+        percentage =
+          Math.round(
+            (
+              optionVotes /
+              totalVotes
+            ) * 100
+          );
+
+      }
+
+
       const row =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       row.className =
         "option";
 
 
-      const optionVotes =
-        Number(
-          pollVotes.get(
-            String(option.id)
-          ) || 0
-        );
-
-
-      /*
-       * Procent liczymy z dokładnych
-       * wartości z tabeli votes.
-       */
-
-      const percentage =
-        totalVotes === 0
-          ? 0
-          : Math.round(
-              (
-                optionVotes /
-                totalVotes
-              ) * 100
-            );
-
-
       const button =
-        document.createElement("button");
+        document.createElement(
+          "button"
+        );
 
       button.className =
         "vote";
 
+
+      const alreadyVoted =
+        hasVoted(
+          poll.id
+        );
+
+
       button.disabled =
-        hasVoted;
+        alreadyVoted;
 
 
       const progress =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       progress.className =
         "progress";
 
       progress.style.width =
-        `${percentage}%`;
+        percentage + "%";
 
 
       const content =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       content.className =
         "vote-content";
 
 
       const text =
-        document.createElement("span");
+        document.createElement(
+          "span"
+        );
 
       text.className =
         "option-text";
@@ -1215,23 +1247,36 @@ function renderPoll(
 
 
       const percent =
-        document.createElement("span");
+        document.createElement(
+          "span"
+        );
 
       percent.className =
         "percent";
 
       percent.textContent =
-        `${percentage}%`;
+        percentage + "%";
 
 
-      content.appendChild(text);
-      content.appendChild(percent);
+      content.appendChild(
+        text
+      );
 
-      button.appendChild(progress);
-      button.appendChild(content);
+      content.appendChild(
+        percent
+      );
 
 
-      if (!hasVoted) {
+      button.appendChild(
+        progress
+      );
+
+      button.appendChild(
+        content
+      );
+
+
+      if (!alreadyVoted) {
 
         button.onclick =
           () => vote(
@@ -1242,35 +1287,44 @@ function renderPoll(
       }
 
 
-      row.appendChild(button);
+      row.appendChild(
+        button
+      );
 
 
       const info =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       info.className =
         "option-info";
 
 
       const votesText =
-        document.createElement("span");
+        document.createElement(
+          "span"
+        );
 
       votesText.textContent =
-        `${optionVotes} ${
-          pluralize(
-            optionVotes,
-            "głos",
-            "głosy",
-            "głosów"
-          )
-        }`;
+        optionVotes +
+        " " +
+        pluralize(
+          optionVotes,
+          "głos",
+          "głosy",
+          "głosów"
+        );
 
 
       const answerText =
-        document.createElement("span");
+        document.createElement(
+          "span"
+        );
 
       answerText.textContent =
-        `Odpowiedź ${index + 1}`;
+        "Odpowiedź " +
+        (index + 1);
 
 
       info.appendChild(
@@ -1282,15 +1336,22 @@ function renderPoll(
       );
 
 
-      row.appendChild(info);
+      row.appendChild(
+        info
+      );
 
-      card.appendChild(row);
+
+      card.appendChild(
+        row
+      );
 
     }
   );
 
 
-  container.appendChild(card);
+  container.appendChild(
+    card
+  );
 
 }
 
@@ -1342,20 +1403,24 @@ async function createPoll() {
   if (!question) {
 
     showMessage(
-      "Wpisz pytanie ankiety."
+      "Wpisz pytanie."
     );
 
     return;
+
   }
 
 
-  if (options.length < 2) {
+  if (
+    options.length < 2
+  ) {
 
     showMessage(
       "Dodaj przynajmniej 2 odpowiedzi."
     );
 
     return;
+
   }
 
 
@@ -1383,7 +1448,9 @@ async function createPoll() {
 
 
     if (pollError) {
+
       throw pollError;
+
     }
 
 
@@ -1391,13 +1458,14 @@ async function createPoll() {
       options.map(
         text => ({
           poll_id: poll.id,
-          text: text
+          text: text,
+          votes: 0
         })
       );
 
 
     const {
-      error: optionError
+      error: optionsError
     } =
       await supabaseClient
         .from("options")
@@ -1406,7 +1474,13 @@ async function createPoll() {
         );
 
 
-    if (optionError) {
+    if (optionsError) {
+
+      /*
+       * Spróbuj usunąć ankietę,
+       * jeżeli dodawanie odpowiedzi
+       * się nie udało.
+       */
 
       await supabaseClient
         .from("polls")
@@ -1416,7 +1490,9 @@ async function createPoll() {
           poll.id
         );
 
-      throw optionError;
+
+      throw optionsError;
+
     }
 
 
@@ -1453,7 +1529,7 @@ async function createPoll() {
   } catch (error) {
 
     console.error(
-      "CREATE POLL ERROR:",
+      "CREATE ERROR:",
       error
     );
 
@@ -1461,6 +1537,7 @@ async function createPoll() {
       error.message ||
       "Nie udało się utworzyć ankiety."
     );
+
 
   } finally {
 
@@ -1474,42 +1551,56 @@ async function createPoll() {
 
 }
 
-
-/* =====================================================
+  /* =====================================================
    GŁOSOWANIE
 ===================================================== */
 
-async function vote(
-  pollId,
-  optionId
-) {
+async function vote(pollId, optionId) {
+
+  if (hasVoted(pollId)) {
+
+    showMessage(
+      "Na tę ankietę już głosowałeś."
+    );
+
+    return;
+  }
+
 
   try {
 
     /*
      * Najpierw zapisujemy głos.
      *
-     * UNIQUE(poll_id, user_id)
-     * zabezpiecza przed drugim głosem.
+     * Tabela votes:
+     * poll_id
+     * user_id
+     *
+     * Para poll_id + user_id powinna
+     * mieć UNIQUE w Supabase.
      */
 
     const {
-      error
+      error: voteError
     } =
       await supabaseClient
         .from("votes")
         .insert({
           poll_id: pollId,
-          option_id: optionId,
           user_id: userId
         });
 
 
-    if (error) {
+    if (voteError) {
 
-      if (
-        error.code === "23505"
-      ) {
+      /*
+       * 23505 = użytkownik już oddał
+       * głos na tę ankietę.
+       */
+
+      if (voteError.code === "23505") {
+
+        rememberVote(pollId);
 
         showMessage(
           "Na tę ankietę już głosowałeś."
@@ -1520,26 +1611,80 @@ async function vote(
         return;
       }
 
-      throw error;
+
+      throw voteError;
     }
 
 
+    /*
+     * Pobieramy aktualną liczbę głosów
+     * wybranej odpowiedzi.
+     */
+
+    const {
+      data: option,
+      error: optionError
+    } =
+      await supabaseClient
+        .from("options")
+        .select("votes")
+        .eq("id", optionId)
+        .single();
+
+
+    if (optionError) {
+
+      throw optionError;
+
+    }
+
+
+    const currentVotes =
+      Number(option.votes || 0);
+
+
+    /*
+     * Zwiększamy licznik o 1.
+     */
+
+    const {
+      error: updateError
+    } =
+      await supabaseClient
+        .from("options")
+        .update({
+          votes: currentVotes + 1
+        })
+        .eq("id", optionId);
+
+
+    if (updateError) {
+
+      throw updateError;
+
+    }
+
+
+    /*
+     * Zapamiętujemy głos w tej
+     * przeglądarce.
+     */
+
+    rememberVote(pollId);
+
+
     showMessage(
-      "Twój głos został zapisany!",
+      "Głos został zapisany!",
       "success"
     );
 
 
     /*
-     * Nie zwiększamy już ręcznie
-     * options.votes.
-     *
-     * Po głosowaniu loadPolls()
-     * pobierze rzeczywiste rekordy
-     * z tabeli votes.
+     * Pobieramy aktualne wyniki.
      */
 
     await loadPolls();
+
 
   } catch (error) {
 
@@ -1547,6 +1692,7 @@ async function vote(
       "VOTE ERROR:",
       error
     );
+
 
     showMessage(
       error.message ||
@@ -1559,23 +1705,20 @@ async function vote(
 
 
 /* =====================================================
-   USUWANIE
+   USUWANIE ANKIETY
 ===================================================== */
 
 let pollToDelete = null;
 
 
-function openDeleteModal(
-  pollId
-) {
+function openDeleteModal(pollId) {
 
   pollToDelete =
     pollId;
 
+
   document
-    .getElementById(
-      "deleteModal"
-    )
+    .getElementById("deleteModal")
     .classList.add("show");
 
 }
@@ -1586,10 +1729,9 @@ function closeDeleteModal() {
   pollToDelete =
     null;
 
+
   document
-    .getElementById(
-      "deleteModal"
-    )
+    .getElementById("deleteModal")
     .classList.remove("show");
 
 }
@@ -1597,21 +1739,21 @@ function closeDeleteModal() {
 
 async function deletePoll() {
 
-  if (
-    pollToDelete === null
-  ) {
+  if (pollToDelete === null) {
+
     return;
+
   }
+
+
+  const pollId =
+    pollToDelete;
 
 
   const button =
     document.getElementById(
       "confirmDelete"
     );
-
-
-  const id =
-    pollToDelete;
 
 
   button.disabled =
@@ -1623,6 +1765,11 @@ async function deletePoll() {
 
   try {
 
+    /*
+     * Usuwamy tylko ankietę,
+     * której autorem jest aktualny użytkownik.
+     */
+
     const {
       error
     } =
@@ -1631,7 +1778,7 @@ async function deletePoll() {
         .delete()
         .eq(
           "id",
-          id
+          pollId
         )
         .eq(
           "author_id",
@@ -1640,8 +1787,17 @@ async function deletePoll() {
 
 
     if (error) {
+
       throw error;
+
     }
+
+
+    /*
+     * Usuwanie powiązanych options/votes
+     * powinno być skonfigurowane w Supabase
+     * przez ON DELETE CASCADE.
+     */
 
 
     closeDeleteModal();
@@ -1663,10 +1819,12 @@ async function deletePoll() {
       error
     );
 
+
     showMessage(
       error.message ||
       "Nie udało się usunąć ankiety."
     );
+
 
   } finally {
 
@@ -1685,21 +1843,6 @@ async function deletePoll() {
    POMOCNICZE
 ===================================================== */
 
-function escapeHtml(text) {
-
-  const div =
-    document.createElement(
-      "div"
-    );
-
-  div.textContent =
-    text ?? "";
-
-  return div.innerHTML;
-
-}
-
-
 function pluralize(
   number,
   one,
@@ -1714,7 +1857,9 @@ function pluralize(
 
 
   if (number === 1) {
+
     return one;
+
   }
 
 
@@ -1744,8 +1889,25 @@ function pluralize(
 }
 
 
+function escapeHtml(text) {
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+
+  div.textContent =
+    text ?? "";
+
+
+  return div.innerHTML;
+
+}
+
+
 /* =====================================================
-   MODAL
+   OBSŁUGA MODALA
 ===================================================== */
 
 document
@@ -1753,6 +1915,11 @@ document
   .addEventListener(
     "click",
     function(event) {
+
+      /*
+       * Kliknięcie w przyciemnione tło
+       * zamyka modal.
+       */
 
       if (
         event.target === this
@@ -1783,7 +1950,7 @@ document.addEventListener(
 
 
 /* =====================================================
-   START
+   START STRONY
 ===================================================== */
 
 loadPolls();
