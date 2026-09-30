@@ -1,490 +1,785 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Głosowanie</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
-:root {
-  --bg: #f4f6fb;
-  --card: #fff;
-  --text: #111827;
-  --muted: #6b7280;
-  --border: #e5e7eb;
-  --primary: #4f46e5;
-  --primary-dark: #4338ca;
-  --danger: #dc2626;
-  --success: #16a34a;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-}
-
-button,
-input {
-  font: inherit;
-}
-
-header {
-  padding: 50px 20px 90px;
-  text-align: center;
-  color: white;
-  background: linear-gradient(135deg, #111827, #312e81, #4f46e5);
-}
-
-.logo {
-  width: 70px;
-  height: 70px;
-  margin: 0 auto 18px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 22px;
-  background: rgba(255,255,255,.15);
-
-  font-size: 34px;
-}
-
-header h1 {
-  margin: 0;
-  font-size: clamp(36px, 8vw, 58px);
-}
-
-header p {
-  margin: 14px auto 0;
-  max-width: 600px;
-
-  color: rgba(255,255,255,.8);
-  line-height: 1.6;
-}
-
-main {
-  width: min(900px, calc(100% - 24px));
-  margin: -45px auto 50px;
-}
-
-.card {
-  background: var(--card);
-  border-radius: 20px;
-  box-shadow: 0 10px 35px rgba(15,23,42,.08);
-}
-
-.create {
-  padding: 25px;
-  margin-bottom: 30px;
-}
-
-.title {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.title-icon {
-  width: 45px;
-  height: 45px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Głosowanie</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --bg: #f4f6fb;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --primary: #4f46e5;
+      --primary-dark: #4338ca;
+      --danger: #dc2626;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --danger-bg: #fee2e2;
+      --blue-bg: #eef2ff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family:
+        Inter,
+        Arial,
+        Helvetica,
+        sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* =========================
+       HEADER
+    ========================= */
+
+    header {
+      padding: 55px 20px 95px;
+      text-align: center;
+      color: white;
+
+      background:
+        linear-gradient(
+          135deg,
+          #111827 0%,
+          #312e81 50%,
+          #4f46e5 100%
+        );
+    }
+
+    .logo {
+      width: 72px;
+      height: 72px;
+
+      margin: 0 auto 18px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      border-radius: 22px;
 
-  border-radius: 13px;
+      background: rgba(255,255,255,.14);
+
+      font-size: 35px;
 
-  background: #eef2ff;
-  color: var(--primary);
+      box-shadow:
+        0 10px 30px rgba(0,0,0,.15);
+    }
 
-  font-size: 23px;
-}
+    header h1 {
+      margin: 0;
 
-.title h2 {
-  margin: 0;
-}
+      font-size:
+        clamp(36px, 8vw, 60px);
 
-.title p {
-  margin: 4px 0 0;
-  color: var(--muted);
-  font-size: 13px;
-}
+      letter-spacing: -1px;
+    }
 
-input {
-  width: 100%;
-  padding: 14px;
-  margin-bottom: 10px;
+    header p {
+      max-width: 620px;
 
-  border: 1px solid var(--border);
-  border-radius: 12px;
+      margin: 14px auto 0;
 
-  outline: none;
-}
+      color:
+        rgba(255,255,255,.78);
 
-input:focus {
-  border-color: #818cf8;
-  box-shadow: 0 0 0 4px rgba(99,102,241,.12);
-}
+      line-height: 1.6;
+    }
 
-.label {
-  display: block;
-  margin: 10px 0;
+    /* =========================
+       MAIN
+    ========================= */
 
-  color: #374151;
-  font-size: 13px;
-  font-weight: bold;
-}
+    main {
+      width:
+        min(
+          900px,
+          calc(100% - 24px)
+        );
 
-.create-button {
-  width: 100%;
-  padding: 14px;
+      margin:
+        -50px auto 50px;
+    }
 
-  border: 0;
-  border-radius: 12px;
+    .card {
+      background: var(--card);
 
-  background: linear-gradient(135deg, #4f46e5, #6366f1);
+      border-radius: 22px;
 
-  color: white;
-  font-weight: bold;
+      box-shadow:
+        0 10px 35px
+        rgba(15,23,42,.08);
+    }
 
-  cursor: pointer;
-}
+    /* =========================
+       MESSAGE
+    ========================= */
 
-.create-button:disabled {
-  opacity: .6;
-  cursor: wait;
-}
+    #message {
+      margin-bottom: 16px;
+    }
 
-#message {
-  margin-bottom: 15px;
-}
+    .message {
+      padding: 14px 16px;
 
-.message {
-  padding: 14px 16px;
-  border-radius: 12px;
-  font-weight: bold;
-}
+      border-radius: 12px;
 
-.message.success {
-  background: #dcfce7;
-  color: #166534;
-}
+      font-size: 14px;
+      font-weight: 700;
+    }
 
-.message.error {
-  background: #fee2e2;
-  color: #991b1b;
-}
+    .message.success {
+      background: var(--success-bg);
+      color: #166534;
+    }
 
-.polls-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+    .message.error {
+      background: var(--danger-bg);
+      color: #991b1b;
+    }
 
-  margin: 0 3px 15px;
-}
+    /* =========================
+       CREATE
+    ========================= */
 
-.polls-header h2 {
-  margin: 0;
-}
+    .create {
+      padding: 26px;
 
-.count {
-  padding: 6px 11px;
+      margin-bottom: 30px;
+    }
 
-  border-radius: 999px;
+    .section-title {
+      display: flex;
+      align-items: center;
 
-  background: #e0e7ff;
-  color: #4338ca;
+      gap: 13px;
 
-  font-size: 12px;
-  font-weight: bold;
-}
+      margin-bottom: 22px;
+    }
 
-.poll {
-  padding: 23px;
-  margin-bottom: 17px;
-}
+    .section-icon {
+      width: 46px;
+      height: 46px;
 
-.poll-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 15px;
-}
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-.question {
-  margin: 0;
+      flex-shrink: 0;
 
-  font-size: 21px;
-  line-height: 1.4;
+      border-radius: 14px;
 
-  overflow-wrap: anywhere;
-}
+      background: var(--blue-bg);
 
-.delete {
-  flex-shrink: 0;
+      color: var(--primary);
 
-  padding: 8px 11px;
+      font-size: 24px;
+    }
 
-  border: 1px solid #fecaca;
-  border-radius: 9px;
+    .section-title h2 {
+      margin: 0;
 
-  background: white;
-  color: var(--danger);
+      font-size: 22px;
+    }
 
-  font-size: 12px;
-  font-weight: bold;
+    .section-title p {
+      margin: 4px 0 0;
 
-  cursor: pointer;
-}
+      color: var(--muted);
 
-.delete:hover {
-  background: #fef2f2;
-}
+      font-size: 13px;
+    }
 
-.meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  margin: 10px 0 20px;
-}
+    .label {
+      display: block;
 
-.badge {
-  padding: 6px 9px;
+      margin:
+        12px 0 9px;
 
-  border-radius: 8px;
+      color: #374151;
 
-  background: #f3f4f6;
-  color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
 
-  font-size: 12px;
-}
+    input {
+      width: 100%;
 
-.badge.voted {
-  background: #dcfce7;
-  color: #166534;
-}
+      padding: 14px 15px;
 
-.option {
-  margin: 12px 0;
-}
+      margin-bottom: 10px;
 
-.vote {
-  position: relative;
-  overflow: hidden;
+      border:
+        1px solid var(--border);
 
-  width: 100%;
-  min-height: 53px;
+      border-radius: 12px;
 
-  padding: 14px;
+      outline: none;
 
-  border: 1px solid var(--border);
-  border-radius: 12px;
+      background: white;
 
-  background: white;
+      color: var(--text);
 
-  text-align: left;
+      transition:
+        border-color .2s,
+        box-shadow .2s;
+    }
 
-  cursor: pointer;
-}
+    input::placeholder {
+      color: #9ca3af;
+    }
 
-.vote:hover:not(:disabled) {
-  border-color: #818cf8;
-}
+    input:focus {
+      border-color: #818cf8;
 
-.vote:disabled {
-  cursor: default;
-}
+      box-shadow:
+        0 0 0 4px
+        rgba(99,102,241,.12);
+    }
 
-.progress {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
+    .create-button {
+      width: 100%;
 
-  background: #eef2ff;
-}
+      margin-top: 5px;
 
-.vote-content {
-  position: relative;
-  z-index: 2;
+      padding: 14px;
 
-  display: flex;
-  justify-content: space-between;
+      border: 0;
 
-  gap: 10px;
+      border-radius: 12px;
 
-  font-weight: bold;
-}
+      background:
+        linear-gradient(
+          135deg,
+          #4f46e5,
+          #6366f1
+        );
 
-.option-text {
-  overflow-wrap: anywhere;
-}
+      color: white;
 
-.percent {
-  color: var(--muted);
-  flex-shrink: 0;
-}
+      font-weight: 700;
 
-.option-info {
-  display: flex;
-  justify-content: space-between;
+      cursor: pointer;
 
-  padding: 5px 4px 0;
+      transition:
+        transform .15s,
+        opacity .15s;
+    }
 
-  color: var(--muted);
+    .create-button:hover:not(:disabled) {
+      transform:
+        translateY(-1px);
+    }
 
-  font-size: 12px;
-}
+    .create-button:disabled {
+      opacity: .6;
 
-.loading,
-.empty {
-  padding: 50px 20px;
-  text-align: center;
-}
+      cursor: wait;
+    }
 
-.spinner {
-  width: 32px;
-  height: 32px;
+    /* =========================
+       POLLS HEADER
+    ========================= */
 
-  margin: 0 auto 13px;
+    .polls-header {
+      display: flex;
 
-  border: 3px solid #e5e7eb;
-  border-top-color: var(--primary);
+      justify-content: space-between;
+      align-items: center;
 
-  border-radius: 50%;
+      margin:
+        0 4px 15px;
+    }
 
-  animation: spin .7s linear infinite;
-}
+    .polls-header h2 {
+      margin: 0;
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
+      font-size: 22px;
+    }
 
-.empty-icon {
-  font-size: 45px;
-  margin-bottom: 10px;
-}
+    .count {
+      min-width: 30px;
 
-.empty h3 {
-  margin: 0 0 7px;
-}
+      padding: 6px 11px;
 
-.empty p {
-  margin: 0;
-  color: var(--muted);
-}
+      text-align: center;
 
-.modal {
-  position: fixed;
-  inset: 0;
+      border-radius: 999px;
 
-  z-index: 100;
+      background: #e0e7ff;
 
-  display: none;
-  align-items: center;
-  justify-content: center;
+      color: #4338ca;
 
-  padding: 20px;
+      font-size: 12px;
+      font-weight: 700;
+    }
 
-  background: rgba(15,23,42,.55);
-  backdrop-filter: blur(4px);
-}
+    /* =========================
+       POLL
+    ========================= */
 
-.modal.show {
-  display: flex;
-}
+    .poll {
+      padding: 24px;
 
-.modal-box {
-  width: min(420px, 100%);
+      margin-bottom: 17px;
+    }
 
-  padding: 25px;
+    .poll-top {
+      display: flex;
 
-  border-radius: 20px;
+      justify-content: space-between;
+      align-items: flex-start;
 
-  background: white;
-}
+      gap: 15px;
+    }
 
-.modal-box h3 {
-  margin-top: 0;
-}
+    .question {
+      margin: 0;
 
-.modal-box p {
-  color: var(--muted);
-  line-height: 1.5;
-}
+      font-size: 21px;
 
-.modal-buttons {
-  display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
+      line-height: 1.4;
 
-.modal-buttons button {
-  flex: 1;
-  padding: 12px;
+      overflow-wrap:
+        anywhere;
+    }
 
-  border-radius: 10px;
+    .delete-button {
+      flex-shrink: 0;
 
-  cursor: pointer;
-  font-weight: bold;
-}
+      padding: 8px 11px;
 
-.cancel {
-  border: 1px solid var(--border);
-  background: white;
-}
+      border:
+        1px solid #fecaca;
 
-.confirm {
-  border: 0;
-  background: var(--danger);
-  color: white;
-}
+      border-radius: 9px;
 
-footer {
-  padding: 20px;
-  text-align: center;
-  color: #9ca3af;
-  font-size: 12px;
-}
+      background: white;
 
-@media(max-width:600px) {
+      color: var(--danger);
 
-  header {
-    padding: 40px 18px 75px;
-  }
+      font-size: 12px;
+      font-weight: 700;
 
-  main {
-    width: calc(100% - 18px);
-  }
+      cursor: pointer;
 
-  .create,
-  .poll {
-    padding: 18px;
-  }
+      transition: background .15s;
+    }
 
-  .poll-top {
-    flex-direction: column;
-  }
+    .delete-button:hover {
+      background: #fef2f2;
+    }
 
-  .delete {
-    align-self: flex-end;
-  }
+    /* =========================
+       META
+    ========================= */
 
-}
-</style>
+    .meta {
+      display: flex;
+
+      flex-wrap: wrap;
+
+      gap: 7px;
+
+      margin:
+        10px 0 20px;
+    }
+
+    .badge {
+      padding: 6px 9px;
+
+      border-radius: 8px;
+
+      background: #f3f4f6;
+
+      color: var(--muted);
+
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge.voted {
+      background:
+        var(--success-bg);
+
+      color: #166534;
+    }
+
+    /* =========================
+       OPTIONS
+    ========================= */
+
+    .option {
+      margin: 12px 0;
+    }
+
+    .vote-button {
+      position: relative;
+
+      overflow: hidden;
+
+      width: 100%;
+
+      min-height: 54px;
+
+      padding: 14px 15px;
+
+      border:
+        1px solid var(--border);
+
+      border-radius: 12px;
+
+      background: white;
+
+      text-align: left;
+
+      cursor: pointer;
+
+      transition:
+        border-color .15s,
+        transform .15s,
+        background .15s;
+    }
+
+    .vote-button:hover:not(:disabled) {
+      border-color: #818cf8;
+
+      transform:
+        translateY(-1px);
+    }
+
+    .vote-button:disabled {
+      cursor: default;
+    }
+
+    .vote-button.selected {
+      border-color: #818cf8;
+
+      background: #fafaff;
+    }
+
+    .progress {
+      position: absolute;
+
+      left: 0;
+      top: 0;
+      bottom: 0;
+
+      width: 0;
+
+      background:
+        rgba(99,102,241,.10);
+
+      pointer-events: none;
+
+      transition:
+        width .4s ease;
+    }
+
+    .vote-content {
+      position: relative;
+
+      z-index: 2;
+
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+
+      gap: 12px;
+
+      font-weight: 700;
+    }
+
+    .option-text {
+      overflow-wrap: anywhere;
+    }
+
+    .percent {
+      flex-shrink: 0;
+
+      color: var(--muted);
+
+      font-size: 13px;
+    }
+
+    .option-info {
+      display: flex;
+
+      justify-content: space-between;
+
+      gap: 10px;
+
+      padding:
+        5px 4px 0;
+
+      color: var(--muted);
+
+      font-size: 12px;
+    }
+
+    /* =========================
+       LOADING
+    ========================= */
+
+    .loading {
+      padding: 55px 20px;
+
+      text-align: center;
+
+      color: var(--muted);
+    }
+
+    .spinner {
+      width: 32px;
+      height: 32px;
+
+      margin:
+        0 auto 13px;
+
+      border:
+        3px solid #e5e7eb;
+
+      border-top-color:
+        var(--primary);
+
+      border-radius: 50%;
+
+      animation:
+        spin .7s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform:
+          rotate(360deg);
+      }
+    }
+
+    /* =========================
+       EMPTY
+    ========================= */
+
+    .empty {
+      padding: 55px 20px;
+
+      text-align: center;
+    }
+
+    .empty-icon {
+      margin-bottom: 10px;
+
+      font-size: 45px;
+    }
+
+    .empty h3 {
+      margin:
+        0 0 7px;
+    }
+
+    .empty p {
+      margin: 0;
+
+      color: var(--muted);
+
+      line-height: 1.5;
+    }
+
+    .retry-button {
+      margin-top: 18px;
+
+      padding: 10px 15px;
+
+      border: 0;
+
+      border-radius: 10px;
+
+      background: var(--primary);
+
+      color: white;
+
+      font-weight: 700;
+
+      cursor: pointer;
+    }
+
+    /* =========================
+       MODAL
+    ========================= */
+
+    .modal {
+      position: fixed;
+
+      inset: 0;
+
+      z-index: 1000;
+
+      display: none;
+
+      align-items: center;
+      justify-content: center;
+
+      padding: 20px;
+
+      background:
+        rgba(15,23,42,.55);
+
+      backdrop-filter:
+        blur(4px);
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-box {
+      width:
+        min(420px,100%);
+
+      padding: 25px;
+
+      border-radius: 20px;
+
+      background: white;
+
+      box-shadow:
+        0 25px 70px
+        rgba(0,0,0,.25);
+    }
+
+    .modal-box h3 {
+      margin:
+        0 0 8px;
+    }
+
+    .modal-box p {
+      margin: 0;
+
+      color: var(--muted);
+
+      line-height: 1.5;
+    }
+
+    .modal-buttons {
+      display: flex;
+
+      gap: 10px;
+
+      margin-top: 22px;
+    }
+
+    .modal-buttons button {
+      flex: 1;
+
+      padding: 12px;
+
+      border-radius: 10px;
+
+      cursor: pointer;
+
+      font-weight: 700;
+    }
+
+    .cancel-button {
+      border:
+        1px solid var(--border);
+
+      background: white;
+    }
+
+    .confirm-button {
+      border: 0;
+
+      background:
+        var(--danger);
+
+      color: white;
+    }
+
+    .confirm-button:disabled {
+      opacity: .6;
+
+      cursor: wait;
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    footer {
+      padding: 20px;
+
+      text-align: center;
+
+      color: #9ca3af;
+
+      font-size: 12px;
+    }
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media (max-width: 600px) {
+
+      header {
+        padding:
+          40px 18px 78px;
+      }
+
+      main {
+        width:
+          calc(100% - 16px);
+      }
+
+      .create,
+      .poll {
+        padding: 18px;
+      }
+
+      .poll-top {
+        flex-direction: column;
+      }
+
+      .delete-button {
+        align-self: flex-end;
+      }
+
+      .question {
+        font-size: 19px;
+      }
+
+      .modal-buttons {
+        flex-direction:
+          column-reverse;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -498,7 +793,8 @@ footer {
   <h1>Głosowanie</h1>
 
   <p>
-    Twórz ankiety, głosuj i sprawdzaj wyniki.
+    Twórz ankiety, głosuj i sprawdzaj
+    wyniki w prosty sposób.
   </p>
 
 </header>
@@ -509,22 +805,28 @@ footer {
   <div id="message"></div>
 
 
-  <!-- TWORZENIE ANKIETY -->
+  <!-- =========================
+       TWORZENIE ANKIETY
+  ========================== -->
 
   <section class="card create">
 
-    <div class="title">
+    <div class="section-title">
 
-      <div class="title-icon">
+      <div class="section-icon">
         ＋
       </div>
 
       <div>
-        <h2>Nowa ankieta</h2>
+
+        <h2>
+          Nowa ankieta
+        </h2>
 
         <p>
           Utwórz pytanie i dodaj odpowiedzi.
         </p>
+
       </div>
 
     </div>
@@ -532,7 +834,9 @@ footer {
 
     <input
       id="question"
+      type="text"
       maxlength="200"
+      autocomplete="off"
       placeholder="Wpisz pytanie ankiety"
     >
 
@@ -544,25 +848,36 @@ footer {
 
     <input
       id="option1"
+      type="text"
       maxlength="100"
+      autocomplete="off"
       placeholder="Odpowiedź A"
     >
 
+
     <input
       id="option2"
+      type="text"
       maxlength="100"
+      autocomplete="off"
       placeholder="Odpowiedź B"
     >
 
+
     <input
       id="option3"
+      type="text"
       maxlength="100"
+      autocomplete="off"
       placeholder="Odpowiedź C — opcjonalnie"
     >
 
+
     <input
       id="option4"
+      type="text"
       maxlength="100"
+      autocomplete="off"
       placeholder="Odpowiedź D — opcjonalnie"
     >
 
@@ -570,13 +885,17 @@ footer {
     <button
       id="createButton"
       class="create-button"
-      onclick="createPoll()"
+      type="button"
     >
       ＋ Utwórz ankietę
     </button>
 
   </section>
 
+
+  <!-- =========================
+       LISTA ANKIET
+  ========================== -->
 
   <div class="polls-header">
 
@@ -614,7 +933,9 @@ footer {
 </footer>
 
 
-<!-- MODAL -->
+<!-- =========================
+     MODAL USUWANIA
+========================== -->
 
 <div
   id="deleteModal"
@@ -628,24 +949,29 @@ footer {
     </h3>
 
     <p>
-      Ankieta i jej odpowiedzi zostaną usunięte.
+      Ankieta, odpowiedzi oraz związane z nią
+      głosy zostaną usunięte.
+      Tej operacji nie można cofnąć.
     </p>
+
 
     <div class="modal-buttons">
 
       <button
-        class="cancel"
-        onclick="closeDeleteModal()"
+        id="cancelDeleteButton"
+        class="cancel-button"
+        type="button"
       >
         Anuluj
       </button>
 
+
       <button
-        id="confirmDelete"
-        class="confirm"
-        onclick="deletePoll()"
+        id="confirmDeleteButton"
+        class="confirm-button"
+        type="button"
       >
-        Usuń
+        Usuń ankietę
       </button>
 
     </div>
@@ -657,15 +983,16 @@ footer {
 
 <script>
 
-/* =====================================================
+/* =========================================================
    SUPABASE
-===================================================== */
+========================================================= */
 
 const SUPABASE_URL =
   "https://hvloevnsrbfmmrkohzxe.supabase.co";
 
 const SUPABASE_KEY =
   "sb_publishable__iN5fmthHgtL_WfMM08sUw_7PCFKJgl";
+
 
 const supabaseClient =
   supabase.createClient(
@@ -674,14 +1001,17 @@ const supabaseClient =
   );
 
 
-/* =====================================================
-   UŻYTKOWNIK
-===================================================== */
+/* =========================================================
+   IDENTYFIKATOR UŻYTKOWNIKA
+========================================================= */
 
 function getUserId() {
 
   let id =
-    localStorage.getItem("voter_id");
+    localStorage.getItem(
+      "voter_id"
+    );
+
 
   if (!id) {
 
@@ -692,7 +1022,9 @@ function getUserId() {
       "voter_id",
       id
     );
+
   }
+
 
   return id;
 }
@@ -702,23 +1034,43 @@ const userId =
   getUserId();
 
 
+/* =========================================================
+   STAN
+========================================================= */
+
+let pollsCache = [];
+
+let pollToDelete = null;
+
+let isLoading = false;
+
+
 /*
- * Lokalnie zapamiętujemy ankiety,
- * na które ta przeglądarka już głosowała.
+ * Lokalna pamięć jest używana wyłącznie do
+ * szybkiego pokazania informacji "zagłosowano".
  *
- * Samo zabezpieczenie przed drugim głosem
- * nadal musi być w bazie UNIQUE(poll_id,user_id).
+ * Rzeczywiste zabezpieczenie znajduje się w bazie:
+ *
+ * UNIQUE (poll_id, user_id)
  */
 
-function getVotedPolls() {
+function getLocalVotes() {
 
   try {
 
-    return JSON.parse(
+    const value =
       localStorage.getItem(
         "voted_polls"
-      ) || "[]"
-    );
+      );
+
+    const parsed =
+      JSON.parse(
+        value || "[]"
+      );
+
+    return Array.isArray(parsed)
+      ? parsed.map(String)
+      : [];
 
   } catch {
 
@@ -729,9 +1081,9 @@ function getVotedPolls() {
 }
 
 
-function hasVoted(pollId) {
+function hasLocalVote(pollId) {
 
-  return getVotedPolls()
+  return getLocalVotes()
     .includes(
       String(pollId)
     );
@@ -739,21 +1091,22 @@ function hasVoted(pollId) {
 }
 
 
-function rememberVote(pollId) {
+function rememberLocalVote(pollId) {
 
-  const voted =
-    getVotedPolls();
+  const votes =
+    getLocalVotes();
 
   const id =
     String(pollId);
 
-  if (!voted.includes(id)) {
 
-    voted.push(id);
+  if (!votes.includes(id)) {
+
+    votes.push(id);
 
     localStorage.setItem(
       "voted_polls",
-      JSON.stringify(voted)
+      JSON.stringify(votes)
     );
 
   }
@@ -761,49 +1114,201 @@ function rememberVote(pollId) {
 }
 
 
-/* =====================================================
+/* =========================================================
    WIADOMOŚCI
-===================================================== */
+========================================================= */
 
 function showMessage(
   text,
   type = "error"
 ) {
 
-  const box =
+  const container =
     document.getElementById(
       "message"
     );
 
-  box.innerHTML = "";
 
-  const div =
+  container.innerHTML = "";
+
+
+  const message =
     document.createElement(
       "div"
     );
 
-  div.className =
+
+  message.className =
     "message " + type;
 
-  div.textContent =
+
+  message.textContent =
     text;
 
-  box.appendChild(div);
 
-  setTimeout(() => {
+  container.appendChild(
+    message
+  );
 
-    box.innerHTML = "";
 
-  }, 4000);
+  window.setTimeout(
+    () => {
+
+      if (
+        container.contains(
+          message
+        )
+      ) {
+
+        container.innerHTML = "";
+
+      }
+
+    },
+    4500
+  );
 
 }
 
 
-/* =====================================================
+/* =========================================================
+   LICZBY / ODMIANA
+========================================================= */
+
+function toSafeNumber(value) {
+
+  const number =
+    Number(value);
+
+
+  if (
+    !Number.isFinite(number) ||
+    number < 0
+  ) {
+
+    return 0;
+
+  }
+
+
+  return Math.floor(
+    number
+  );
+
+}
+
+
+function pluralize(
+  number,
+  one,
+  few,
+  many
+) {
+
+  const n =
+    Math.abs(
+      Number(number)
+    );
+
+
+  if (n === 1) {
+
+    return one;
+
+  }
+
+
+  const lastTwo =
+    n % 100;
+
+
+  if (
+    lastTwo >= 12 &&
+    lastTwo <= 14
+  ) {
+
+    return many;
+
+  }
+
+
+  const last =
+    n % 10;
+
+
+  if (
+    last >= 2 &&
+    last <= 4
+  ) {
+
+    return few;
+
+  }
+
+
+  return many;
+
+}
+
+
+/* =========================================================
+   FORMATOWANIE BŁĘDÓW
+========================================================= */
+
+function readableError(error) {
+
+  if (!error) {
+
+    return "Wystąpił nieznany błąd.";
+
+  }
+
+
+  if (
+    error.code === "23505"
+  ) {
+
+    return (
+      "Na tę ankietę został już oddany głos."
+    );
+
+  }
+
+
+  if (
+    error.code === "42501"
+  ) {
+
+    return (
+      "Supabase zablokował tę operację przez RLS. Sprawdź polityki tabel."
+    );
+
+  }
+
+
+  return (
+    error.message ||
+    "Wystąpił nieznany błąd."
+  );
+
+}
+
+
+/* =========================================================
    ŁADOWANIE ANKIET
-===================================================== */
+========================================================= */
 
 async function loadPolls() {
+
+  if (isLoading) {
+
+    return;
+
+  }
+
+
+  isLoading = true;
+
 
   const container =
     document.getElementById(
@@ -813,11 +1318,8 @@ async function loadPolls() {
 
   container.innerHTML = `
     <div class="card loading">
-
       <div class="spinner"></div>
-
       Ładowanie ankiet...
-
     </div>
   `;
 
@@ -825,32 +1327,28 @@ async function loadPolls() {
   try {
 
     /*
-     * WAŻNE:
+     * Pobieramy ankiety i odpowiedzi.
      *
-     * Pobieramy TYLKO polls + options.
-     *
-     * Nie pytamy tutaj tabeli votes.
-     * Nie używamy RPC.
-     * Nie ma więc możliwości,
-     * żeby RLS tabeli votes zatrzymał
-     * ładowanie strony.
+     * UWAGA:
+     * Nie pobieramy options.votes.
+     * Liczniki są obliczane z tabeli votes.
      */
 
     const {
-      data,
-      error
+      data: polls,
+      error: pollsError
     } =
       await supabaseClient
         .from("polls")
         .select(`
           id,
           question,
-          created_at,
           author_id,
+          created_at,
           options (
             id,
-            text,
-            votes
+            poll_id,
+            text
           )
         `)
         .order(
@@ -861,24 +1359,229 @@ async function loadPolls() {
         );
 
 
-    if (error) {
+    if (pollsError) {
 
-      throw error;
+      throw pollsError;
 
     }
 
 
-    const polls =
-      data || [];
+    const safePolls =
+      Array.isArray(polls)
+        ? polls
+        : [];
 
+
+    pollsCache =
+      safePolls;
+
+
+    /*
+     * Pobieramy WSZYSTKIE głosy.
+     *
+     * W SQL musisz mieć policy:
+     *
+     * create policy "votes_select"
+     * on public.votes
+     * for select
+     * to anon, authenticated
+     * using (true);
+     */
+
+    const {
+      data: votes,
+      error: votesError
+    } =
+      await supabaseClient
+        .from("votes")
+        .select(`
+          poll_id,
+          option_id,
+          user_id
+        `);
+
+
+    if (votesError) {
+
+      throw votesError;
+
+    }
+
+
+    const safeVotes =
+      Array.isArray(votes)
+        ? votes
+        : [];
+
+
+    /*
+     * Tworzymy mapę:
+     *
+     * pollId -> liczba wszystkich głosów
+     *
+     * oraz:
+     *
+     * optionId -> liczba głosów
+     */
+
+    const pollVoteCounts =
+      new Map();
+
+    const optionVoteCounts =
+      new Map();
+
+
+    safeVotes.forEach(
+      vote => {
+
+        const pollId =
+          String(
+            vote.poll_id
+          );
+
+
+        const optionId =
+          String(
+            vote.option_id
+          );
+
+
+        pollVoteCounts.set(
+          pollId,
+          (
+            pollVoteCounts.get(
+              pollId
+            ) || 0
+          ) + 1
+        );
+
+
+        optionVoteCounts.set(
+          optionId,
+          (
+            optionVoteCounts.get(
+           optionVoteCounts.set(
+            optionId,
+            (
+              optionVoteCounts.get(
+                optionId
+              ) || 0
+            ) + 1
+          );
+
+        }
+    );
+
+
+    /*
+     * Łączymy dane z ankiet z rzeczywistymi
+     * głosami znajdującymi się w tabeli votes.
+     */
+
+    const currentUserVotes =
+      new Set();
+
+
+    safeVotes.forEach(
+      vote => {
+
+        if (
+          String(vote.user_id) ===
+          String(userId)
+        ) {
+
+          currentUserVotes.add(
+            String(vote.poll_id)
+          );
+
+        }
+
+      }
+    );
+
+
+    /*
+     * Jeżeli lokalny localStorage mówi,
+     * że użytkownik głosował, również
+     * uwzględniamy tę informację.
+     */
+
+    getLocalVotes().forEach(
+      pollId => {
+
+        currentUserVotes.add(
+          String(pollId)
+        );
+
+      }
+    );
+
+
+    /*
+     * Dodajemy policzone głosy do ankiet.
+     */
+
+    safePolls.forEach(
+      poll => {
+
+        const pollId =
+          String(poll.id);
+
+
+        const options =
+          Array.isArray(
+            poll.options
+          )
+            ? poll.options
+            : [];
+
+
+        poll.total_votes =
+          pollVoteCounts.get(
+            pollId
+          ) || 0;
+
+
+        poll.options =
+          options.map(
+            option => {
+
+              const optionId =
+                String(
+                  option.id
+                );
+
+
+              return {
+                ...option,
+
+                vote_count:
+                  optionVoteCounts.get(
+                    optionId
+                  ) || 0
+
+              };
+
+            }
+          );
+
+      }
+    );
+
+
+    /*
+     * Aktualizujemy licznik ankiet.
+     */
 
     document.getElementById(
       "pollCount"
     ).textContent =
-      polls.length;
+      safePolls.length;
 
 
-    if (polls.length === 0) {
+    if (
+      safePolls.length === 0
+    ) {
 
       container.innerHTML = `
         <div class="card empty">
@@ -903,24 +1606,44 @@ async function loadPolls() {
     }
 
 
+    /*
+     * Czyścimy stare wyniki.
+     */
+
     container.innerHTML = "";
 
 
-    polls.forEach(
+    /*
+     * Wyświetlamy każdą ankietę.
+     */
+
+    safePolls.forEach(
       poll => {
 
-        renderPoll(poll);
+        renderPoll(
+          poll,
+          currentUserVotes.has(
+            String(poll.id)
+          )
+        );
 
       }
     );
 
+  }
 
-  } catch (error) {
+  catch (error) {
 
     console.error(
-      "BŁĄD ŁADOWANIA:",
+      "LOAD POLLS ERROR:",
       error
     );
+
+
+    document.getElementById(
+      "pollCount"
+    ).textContent =
+      "0";
 
 
     container.innerHTML = `
@@ -936,24 +1659,40 @@ async function loadPolls() {
 
         <p>
           ${escapeHtml(
-            error.message ||
-            "Wystąpił nieznany błąd."
+            readableError(error)
           )}
         </p>
+
+        <button
+          class="retry-button"
+          type="button"
+          onclick="loadPolls()"
+        >
+          Spróbuj ponownie
+        </button>
 
       </div>
     `;
 
   }
 
+  finally {
+
+    isLoading = false;
+
+  }
+
 }
 
 
-/* =====================================================
+/* =========================================================
    WYŚWIETLANIE ANKIETY
-===================================================== */
+========================================================= */
 
-function renderPoll(poll) {
+function renderPoll(
+  poll,
+  hasVoted
+) {
 
   const container =
     document.getElementById(
@@ -969,6 +1708,10 @@ function renderPoll(poll) {
   card.className =
     "card poll";
 
+
+  /* -------------------------
+     GÓRA ANKIETY
+  ------------------------- */
 
   const top =
     document.createElement(
@@ -997,7 +1740,7 @@ function renderPoll(poll) {
 
 
   /*
-   * Tylko autorowi pokazujemy usuwanie.
+   * Autor może usunąć swoją ankietę.
    */
 
   if (
@@ -1010,16 +1753,27 @@ function renderPoll(poll) {
         "button"
       );
 
+    deleteButton.type =
+      "button";
+
     deleteButton.className =
-      "delete";
+      "delete-button";
 
     deleteButton.textContent =
       "🗑️ Usuń";
 
-    deleteButton.onclick =
-      () => openDeleteModal(
-        poll.id
-      );
+
+    deleteButton.addEventListener(
+      "click",
+      () => {
+
+        openDeleteModal(
+          poll.id
+        );
+
+      }
+    );
+
 
     top.appendChild(
       deleteButton
@@ -1033,35 +1787,32 @@ function renderPoll(poll) {
   );
 
 
+  /* -------------------------
+     OPCJE
+  ------------------------- */
+
   const options =
-    Array.isArray(poll.options)
+    Array.isArray(
+      poll.options
+    )
       ? poll.options
       : [];
 
 
   /*
-   * LICZYMY PRAWDZIWĄ SUMĘ
-   * Z LICZNIKÓW W options.
+   * RZECZYWISTA liczba wszystkich
+   * głosów w tej ankiecie.
    */
 
   const totalVotes =
-    options.reduce(
-      (sum, option) => {
-
-        return sum +
-          Math.max(
-            0,
-            Number(
-              option.votes || 0
-            )
-          );
-
-      },
-      0
+    toSafeNumber(
+      poll.total_votes
     );
 
 
-  /* META */
+  /* -------------------------
+     META
+  ------------------------- */
 
   const meta =
     document.createElement(
@@ -1080,13 +1831,40 @@ function renderPoll(poll) {
   dateBadge.className =
     "badge";
 
+
+  let dateText =
+    "brak daty";
+
+
+  if (
+    poll.created_at
+  ) {
+
+    const date =
+      new Date(
+        poll.created_at
+      );
+
+
+    if (
+      !Number.isNaN(
+        date.getTime()
+      )
+    ) {
+
+      dateText =
+        date.toLocaleDateString(
+          "pl-PL"
+        );
+
+    }
+
+  }
+
+
   dateBadge.textContent =
     "📅 " +
-    new Date(
-      poll.created_at
-    ).toLocaleDateString(
-      "pl-PL"
-    );
+    dateText;
 
 
   meta.appendChild(
@@ -1094,15 +1872,16 @@ function renderPoll(poll) {
   );
 
 
-  const voteBadge =
+  const votesBadge =
     document.createElement(
       "span"
     );
 
-  voteBadge.className =
+  votesBadge.className =
     "badge";
 
-  voteBadge.textContent =
+
+  votesBadge.textContent =
     "🗳️ " +
     totalVotes +
     " " +
@@ -1115,14 +1894,12 @@ function renderPoll(poll) {
 
 
   meta.appendChild(
-    voteBadge
+    votesBadge
   );
 
 
   if (
-    hasVoted(
-      poll.id
-    )
+    hasVoted
   ) {
 
     const votedBadge =
@@ -1136,6 +1913,7 @@ function renderPoll(poll) {
     votedBadge.textContent =
       "✓ Zagłosowano";
 
+
     meta.appendChild(
       votedBadge
     );
@@ -1148,23 +1926,39 @@ function renderPoll(poll) {
   );
 
 
-  /* ODPOWIEDZI */
+  /* -------------------------
+     ODPOWIEDZI
+  ------------------------- */
 
   options.forEach(
     (option, index) => {
 
+      const row =
+        document.createElement(
+          "div"
+        );
+
+      row.className =
+        "option";
+
+
+      /*
+       * Liczba głosów pochodzi
+       * bezpośrednio z tabeli votes.
+       */
+
       const optionVotes =
-        Math.max(
-          0,
-          Number(
-            option.votes || 0
-          )
+        toSafeNumber(
+          option.vote_count
         );
 
 
       /*
-       * Jeżeli nie ma żadnych głosów,
-       * wszystkie procenty = 0%.
+       * Procent liczony jest z:
+       *
+       * głosy odpowiedzi
+       * ----------------
+       * wszystkie głosy ankiety
        */
 
       let percentage = 0;
@@ -1179,19 +1973,25 @@ function renderPoll(poll) {
             (
               optionVotes /
               totalVotes
-            ) * 100
+            ) *
+            100
           );
 
       }
 
 
-      const row =
-        document.createElement(
-          "div"
-        );
+      /*
+       * Drobna korekta bezpieczeństwa.
+       */
 
-      row.className =
-        "option";
+      percentage =
+        Math.max(
+          0,
+          Math.min(
+            100,
+            percentage
+          )
+        );
 
 
       const button =
@@ -1199,19 +1999,26 @@ function renderPoll(poll) {
           "button"
         );
 
+      button.type =
+        "button";
+
       button.className =
-        "vote";
+        "vote-button";
 
 
-      const alreadyVoted =
-        hasVoted(
-          poll.id
-        );
+      if (
+        hasVoted
+      ) {
+
+        button.disabled =
+          true;
+
+      }
 
 
-      button.disabled =
-        alreadyVoted;
-
+      /*
+       * Pasek procentowy.
+       */
 
       const progress =
         document.createElement(
@@ -1222,8 +2029,18 @@ function renderPoll(poll) {
         "progress";
 
       progress.style.width =
-        percentage + "%";
+        percentage +
+        "%";
 
+
+      button.appendChild(
+        progress
+      );
+
+
+      /*
+       * Tekst odpowiedzi.
+       */
 
       const content =
         document.createElement(
@@ -1234,15 +2051,15 @@ function renderPoll(poll) {
         "vote-content";
 
 
-      const text =
+      const optionText =
         document.createElement(
           "span"
         );
 
-      text.className =
+      optionText.className =
         "option-text";
 
-      text.textContent =
+      optionText.textContent =
         option.text;
 
 
@@ -1255,11 +2072,12 @@ function renderPoll(poll) {
         "percent";
 
       percent.textContent =
-        percentage + "%";
+        percentage +
+        "%";
 
 
       content.appendChild(
-        text
+        optionText
       );
 
       content.appendChild(
@@ -1268,21 +2086,29 @@ function renderPoll(poll) {
 
 
       button.appendChild(
-        progress
-      );
-
-      button.appendChild(
         content
       );
 
 
-      if (!alreadyVoted) {
+      /*
+       * Głosowanie.
+       */
 
-        button.onclick =
-          () => vote(
-            poll.id,
-            option.id
-          );
+      if (
+        !hasVoted
+      ) {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            vote(
+              poll.id,
+              option.id
+            );
+
+          }
+        );
 
       }
 
@@ -1291,6 +2117,10 @@ function renderPoll(poll) {
         button
       );
 
+
+      /*
+       * Informacja pod przyciskiem.
+       */
 
       const info =
         document.createElement(
@@ -1301,12 +2131,12 @@ function renderPoll(poll) {
         "option-info";
 
 
-      const votesText =
+      const voteText =
         document.createElement(
           "span"
         );
 
-      votesText.textContent =
+      voteText.textContent =
         optionVotes +
         " " +
         pluralize(
@@ -1328,7 +2158,7 @@ function renderPoll(poll) {
 
 
       info.appendChild(
-        votesText
+        voteText
       );
 
       info.appendChild(
@@ -1356,9 +2186,1983 @@ function renderPoll(poll) {
 }
 
 
-/* =====================================================
+/* =========================================================
+   GŁOSOWANIE
+========================================================= */
+
+async function vote(
+  pollId,
+  optionId
+) {
+
+  /*
+   * Sprawdzamy lokalnie przed wysłaniem.
+   */
+
+  if (
+    hasLocalVote(
+      pollId
+    )
+  ) {
+
+    showMessage(
+      "Na tę ankietę już głosowałeś."
+    );
+
+    return;
+
+  }
+
+
+  /*
+   * Znajdujemy wszystkie przyciski
+   * tej ankiety i tymczasowo je blokujemy.
+   */
+
+  const poll =
+    pollsCache.find(
+      item =>
+        String(item.id) ===
+        String(pollId)
+    );
+
+
+  if (!poll) {
+
+    showMessage(
+      "Nie znaleziono ankiety."
+    );
+
+    return;
+
+  }
+
+
+  try {
+
+    const buttons =
+      document.querySelectorAll(
+        ".vote-button"
+      );
+
+
+    buttons.forEach(
+      button => {
+
+        button.disabled =
+          true;
+
+      }
+    );
+
+
+    /*
+     * NAJWAŻNIEJSZE:
+     *
+     * Dodajemy jeden rekord do votes.
+     *
+     * option_id musi wskazywać
+     * na ID odpowiedzi z tabeli options.
+     */
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("votes")
+        .insert({
+          poll_id:
+            pollId,
+
+          option_id:
+            optionId,
+
+          user_id:
+            userId
+        });
+
+
+    if (error) {
+
+      /*
+       * 23505 = UNIQUE violation.
+       * Oznacza, że użytkownik już zagłosował.
+       */
+
+      if (
+        error.code ===
+        "23505"
+      ) {
+
+        rememberLocalVote(
+          pollId
+        );
+
+
+        showMessage(
+          "Na tę ankietę już głosowałeś."
+        );
+
+
+        await loadPolls();
+
+        return;
+
+      }
+
+
+      throw error;
+
+    }
+
+
+    /*
+     * Zapamiętujemy głos lokalnie.
+     */
+
+    rememberLocalVote(
+      pollId
+    );
+
+
+    showMessage(
+      "Głos został zapisany!",
+      "success"
+    );
+
+
+    /*
+     * Ponownie pobieramy dane z Supabase.
+     *
+     * NIE zwiększamy ręcznie liczników.
+     * Dzięki temu liczby i procenty
+     * pochodzą z rzeczywistych rekordów votes.
+     */
+
+    await loadPolls();
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "VOTE ERROR:",
+      error
+    );
+
+
+    showMessage(
+      readableError(
+        error
+      )
+    );
+
+
+    /*
+     * Przywracamy możliwość głosowania.
+     */
+
+    await loadPolls();
+
+  }
+
+}
+
+
+/* =========================================================
    TWORZENIE ANKIETY
-===================================================== */
+========================================================= */
+
+async function createPoll() {
+
+  const button =
+    document.getElementById(
+      "createButton"
+    );
+
+
+  const question =
+    document
+      .getElementById(
+        "question"
+      )
+      .value
+      .trim();
+
+
+  const options = [
+
+    document
+      .getElementById(
+        "option1"
+      )
+      .value
+      .trim(),
+
+    document
+      .getElementById(
+        "option2"
+      )
+      .value
+      .trim(),
+
+    document
+      .getElementById(
+        "option3"
+      )
+      .value
+      .trim(),
+
+    document
+      .getElementById(
+        "option4"
+      )
+      .value
+      .trim()
+
+  ].filter(
+    Boolean
+  );
+
+
+  if (!question) {
+
+    showMessage(
+      "Wpisz pytanie ankiety."
+    );
+
+    return;
+
+  }
+
+
+  if (
+    options.length < 2
+  ) {
+
+    showMessage(
+      "Dodaj przynajmniej 2 odpowiedzi."
+    );
+
+    return;
+
+  }
+
+
+  /*
+   * Usuwamy duplikaty odpowiedzi.
+   */
+
+  const uniqueOptions =
+    [
+      ...new Set(
+        options.map(
+          option =>
+            option.toLowerCase()
+        )
+      )
+    ];
+
+
+  if (
+    uniqueOptions.length !==
+    options.length
+  ) {
+
+    showMessage(
+      "Odpowiedzi w jednej ankiecie muszą być różne."
+    );
+
+    return;
+
+  }
+
+
+  button.disabled =
+    true;
+
+  button.textContent =
+    "Tworzenie...";
+
+
+  try {
+
+    /*
+     * Tworzymy ankietę.
+     */
+
+    const {
+      data: poll,
+      error: pollError
+    } =
+      await supabaseClient
+        .from("polls")
+        .insert({
+          question:
+            question,
+
+          author_id:
+            userId
+        })
+        .select(
+          "id"
+        )
+        .single();
+
+
+    if (pollError) {
+
+      throw pollError;
+
+    }
+
+
+    if (
+      !poll ||
+      !poll.id
+    ) {
+
+      throw new Error(
+        "Supabase nie zwrócił ID utworzonej ankiety."
+      );
+
+    }
+
+
+    /*
+     * Tworzymy odpowiedzi.
+     *
+     * NIE dodajemy tutaj votes = 0.
+     * Liczniki są obliczane z tabeli votes.
+     */
+
+    const optionRows =
+      options.map(
+        text => ({
+          poll_id:
+            poll.id,
+
+          text:
+            text
+        })
+      );
+
+
+    const {
+      error:
+        optionsError
+    } =
+      await supabaseClient
+        .from("options")
+        .insert(
+          optionRows
+        );
+
+
+    if (optionsError) {
+
+      /*
+       * Jeżeli odpowiedzi nie zostały
+       * utworzone, próbujemy usunąć
+       * pustą ankietę.
+       */
+
+      await supabaseClient
+        .from("polls")
+        .delete()
+        .eq(
+          "id",
+          poll.id
+        );
+
+
+      throw optionsError;
+
+    }
+
+
+    /*
+     * Czyścimy formularz.
+     */
+
+    [
+      "question",
+      "option1",
+      "option2",
+      "option3",
+      "option4"
+    ].forEach(
+      id => {
+
+        document.getElementById(
+          id
+        ).value = "";
+
+      }
+    );
+
+
+    showMessage(
+      "Ankieta została utworzona!",
+      "success"
+    );
+
+
+    await loadPolls();
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "CREATE POLL ERROR:",
+      error
+    );
+
+
+    showMessage(
+      readableError(
+        error
+      )
+    );
+
+  }
+
+  finally {
+
+    button.disabled =
+      false;
+
+    button.textContent =
+      "＋ Utwórz ankietę";
+
+  }
+
+}
+
+
+/* =========================================================
+   USUWANIE — MODAL
+========================================================= */
+
+function openDeleteModal(
+  pollId
+) {
+
+  pollToDelete =
+    pollId;
+
+
+  const modal =
+    document.getElementById(
+      "deleteModal"
+    );
+
+
+  modal.classList.add(
+    "show"
+  );
+
+}
+
+
+function closeDeleteModal() {
+
+  pollToDelete =
+    null;
+
+
+  document
+    .getElementById(
+      "deleteModal"
+    )
+    .classList.remove(
+      "show"
+    );
+
+}
+
+
+/* =========================================================
+   USUWANIE ANKIETY
+========================================================= */
+
+async function deletePoll() {
+
+  if (
+    pollToDelete ===
+    null
+  ) {
+
+    return;
+
+  }
+
+
+  const pollId =
+    pollToDelete;
+
+
+  const button =
+    document.getElementById(
+      "confirmDeleteButton"
+    );
+
+
+  button.disabled =
+    true;
+
+  button.textContent =
+    "Usuwanie...";
+
+
+  try {
+
+    /*
+     * Najpierw sprawdzamy lokalnie,
+     * czy użytkownik jest autorem.
+     */
+
+    const poll =
+      pollsCache.find(
+        item =>
+          String(item.id) ===
+          String(pollId)
+      );
+
+
+    if (!poll) {
+
+      throw new Error(
+        "Nie znaleziono ankiety."
+      );
+
+    }
+
+
+    if (
+      String(poll.author_id) !==
+      String(userId)
+    ) {
+
+      throw new Error(
+        "Tylko autor ankiety może ją usunąć."
+      );
+
+    }
+
+
+    /*
+     * Najpierw usuwamy głosy.
+     *
+     * Dzięki temu nie potrzebujemy
+     * CASCADE w bazie.
+     */
+
+    const {
+      error:
+        votesDeleteError
+    } =
+      await supabaseClient
+        .from("votes")
+        .delete()
+        .eq(
+          "poll_id",
+          pollId
+        );
+
+
+    if (
+      votesDeleteError
+    ) {
+
+      throw votesDeleteError;
+
+    }
+
+
+    /*
+     * Usuwamy odpowiedzi.
+     */
+
+    const {
+      error:
+        optionsDeleteError
+    } =
+      await supabaseClient
+        .from("options")
+        .delete()
+        .eq(
+          "poll_id",
+          pollId
+        );
+
+
+    if (
+      optionsDeleteError
+    ) {
+
+      throw optionsDeleteError;
+
+    }
+
+
+    /*
+     * Na końcu usuwamy ankietę.
+     */
+
+    const {
+      error:
+        pollDeleteError
+    } =
+      await supabaseClient
+        .from("polls")
+        .delete()
+        .eq(
+          "id",
+          pollId
+        )
+        .eq(
+          "author_id",
+          userId
+        );
+
+
+    if (
+      pollDeleteError
+    ) {
+
+      throw pollDeleteError;
+
+    }
+
+
+    /*
+     * Czyścimy lokalną informację
+     * o głosowaniu w tej ankiecie.
+     */
+
+    const localVotes =
+      getLocalVotes()
+        .filter(
+          id =>
+            id !==
+            String(pollId)
+        );
+
+
+    localStorage.setItem(
+      "voted_polls",
+      JSON.stringify(
+        localVotes
+      )
+    );
+
+
+    closeDeleteModal();
+
+
+    showMessage(
+      "Ankieta została usunięta.",
+      "success"
+    );
+
+
+    await loadPolls();
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "DELETE POLL ERROR:",
+      error
+    );
+
+
+    showMessage(
+      readableError(
+        error
+      )
+    );
+
+  }
+
+  finally {
+
+    button.disabled =
+      false;
+
+    button.textContent =
+      "Usuń ankietę";
+
+  }
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(
+  value
+) {
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+
+  div.textContent =
+    String(
+      value ?? ""
+    );
+
+
+  return div.innerHTML;
+
+}
+
+
+/* =========================================================
+   OBSŁUGA MODALA
+========================================================= */
+
+document
+  .getElementById(
+    "cancelDeleteButton"
+  )
+  .addEventListener(
+    "click",
+    closeDeleteModal
+  );
+
+
+document
+  .getElementById(
+    "deleteModal"
+  )
+  .addEventListener(
+    "click",
+    event => {
+
+      if (
+        event.target.id ===
+        "deleteModal"
+      ) {
+
+        closeDeleteModal();
+
+      }
+
+    }
+  );
+
+
+document
+  .addEventListener(
+    "keydown",
+    event => {
+
+      if (
+        event.key ===
+        "Escape"
+      ) {
+
+        closeDeleteModal();
+
+      }
+
+    }
+  );
+
+
+/* =========================================================
+   PRZYCISK TWORZENIA
+========================================================= */
+
+document
+  .getElementById(
+    "createButton"
+  )
+  .addEventListener(
+    "click",
+    createPoll
+  );
+
+
+/* =========================================================
+   ENTER W FORMULARZU
+========================================================= */
+
+[
+  "question",
+  "option1",
+  "option2",
+  "option3",
+  "option4"
+].forEach(
+  id => {
+
+    document
+      .getElementById(
+        id
+      )
+      .addEventListener(
+        "keydown",
+        event => {
+
+          if (
+            event.key ===
+            "Enter"
+  <script>
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+  "https://hvloevnsrbfmmrkohzxe.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable__iN5fmthHgtL_WfMM08sUw_7PCFKJgl";
+
+const supabaseClient =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+/* =========================================================
+   UŻYTKOWNIK
+========================================================= */
+
+function getUserId() {
+
+  let id = localStorage.getItem("voter_id");
+
+  if (!id) {
+
+    if (
+      window.crypto &&
+      typeof crypto.randomUUID === "function"
+    ) {
+      id = crypto.randomUUID();
+    } else {
+      id =
+        Date.now().toString(36) +
+        Math.random().toString(36).slice(2);
+    }
+
+    localStorage.setItem("voter_id", id);
+  }
+
+  return id;
+}
+
+const userId = getUserId();
+
+
+/* =========================================================
+   STAN
+========================================================= */
+
+let pollsCache = [];
+let pollToDelete = null;
+let isLoading = false;
+
+
+/* =========================================================
+   LOCAL VOTES
+========================================================= */
+
+function getLocalVotes() {
+
+  try {
+
+    const raw =
+      localStorage.getItem("voted_polls");
+
+    const parsed =
+      JSON.parse(raw || "[]");
+
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    return parsed.map(String);
+
+  } catch {
+
+    return [];
+
+  }
+}
+
+
+function hasLocalVote(pollId) {
+
+  return getLocalVotes().includes(
+    String(pollId)
+  );
+
+}
+
+
+function rememberLocalVote(pollId) {
+
+  const votes = getLocalVotes();
+
+  const id = String(pollId);
+
+  if (!votes.includes(id)) {
+
+    votes.push(id);
+
+    localStorage.setItem(
+      "voted_polls",
+      JSON.stringify(votes)
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   WIADOMOŚCI
+========================================================= */
+
+function showMessage(
+  text,
+  type = "error"
+) {
+
+  const container =
+    document.getElementById("message");
+
+  container.innerHTML = "";
+
+  const message =
+    document.createElement("div");
+
+  message.className =
+    "message " + type;
+
+  message.textContent =
+    text;
+
+  container.appendChild(message);
+
+  setTimeout(() => {
+
+    if (
+      container.contains(message)
+    ) {
+      container.innerHTML = "";
+    }
+
+  }, 4500);
+
+}
+
+
+/* =========================================================
+   LICZBY
+========================================================= */
+
+function toSafeNumber(value) {
+
+  const number = Number(value);
+
+  if (
+    !Number.isFinite(number) ||
+    number < 0
+  ) {
+    return 0;
+  }
+
+  return Math.floor(number);
+}
+
+
+function pluralize(
+  number,
+  one,
+  few,
+  many
+) {
+
+  const n =
+    Math.abs(Number(number));
+
+  if (n === 1) {
+    return one;
+  }
+
+  const lastTwo = n % 100;
+
+  if (
+    lastTwo >= 12 &&
+    lastTwo <= 14
+  ) {
+    return many;
+  }
+
+  const last = n % 10;
+
+  if (
+    last >= 2 &&
+    last <= 4
+  ) {
+    return few;
+  }
+
+  return many;
+}
+
+
+/* =========================================================
+   BŁĘDY
+========================================================= */
+
+function readableError(error) {
+
+  if (!error) {
+    return "Wystąpił nieznany błąd.";
+  }
+
+  console.error(error);
+
+  if (error.code === "23505") {
+    return "Na tę ankietę został już oddany głos.";
+  }
+
+  if (error.code === "42501") {
+    return "Operacja została zablokowana przez RLS w Supabase.";
+  }
+
+  if (error.code === "23503") {
+    return "Operacja nie może zostać wykonana, ponieważ dane są ze sobą powiązane.";
+  }
+
+  return (
+    error.message ||
+    "Wystąpił nieznany błąd."
+  );
+}
+
+
+/* =========================================================
+   ŁADOWANIE ANKIET
+========================================================= */
+
+async function loadPolls() {
+
+  if (isLoading) {
+    return;
+  }
+
+  isLoading = true;
+
+  const container =
+    document.getElementById("polls");
+
+  container.innerHTML = `
+    <div class="card loading">
+      <div class="spinner"></div>
+      Ładowanie ankiet...
+    </div>
+  `;
+
+  try {
+
+    /* -------------------------
+       ANKIETY + ODPOWIEDZI
+    ------------------------- */
+
+    const {
+      data: polls,
+      error: pollsError
+    } =
+      await supabaseClient
+        .from("polls")
+        .select(`
+          id,
+          question,
+          author_id,
+          created_at,
+          options (
+            id,
+            poll_id,
+            text
+          )
+        `)
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
+
+    if (pollsError) {
+      throw pollsError;
+    }
+
+    const safePolls =
+      Array.isArray(polls)
+        ? polls
+        : [];
+
+
+    /* -------------------------
+       GŁOSY
+    ------------------------- */
+
+    const {
+      data: votes,
+      error: votesError
+    } =
+      await supabaseClient
+        .from("votes")
+        .select(`
+          poll_id,
+          option_id,
+          user_id
+        `);
+
+    if (votesError) {
+      throw votesError;
+    }
+
+    const safeVotes =
+      Array.isArray(votes)
+        ? votes
+        : [];
+
+
+    /* -------------------------
+       LICZNIKI
+    ------------------------- */
+
+    const pollVoteCounts =
+      new Map();
+
+    const optionVoteCounts =
+      new Map();
+
+    const currentUserVotes =
+      new Set();
+
+
+    safeVotes.forEach(vote => {
+
+      const pollId =
+        String(vote.poll_id);
+
+      const optionId =
+        String(vote.option_id);
+
+      /* suma głosów ankiety */
+
+      pollVoteCounts.set(
+        pollId,
+        (
+          pollVoteCounts.get(pollId) || 0
+        ) + 1
+      );
+
+      /* suma głosów odpowiedzi */
+
+      optionVoteCounts.set(
+        optionId,
+        (
+          optionVoteCounts.get(optionId) || 0
+        ) + 1
+      );
+
+      /* głos aktualnego użytkownika */
+
+      if (
+        String(vote.user_id) ===
+        String(userId)
+      ) {
+
+        currentUserVotes.add(
+          pollId
+        );
+
+      }
+
+    });
+
+
+    /* -------------------------
+       ŁĄCZENIE DANYCH
+    ------------------------- */
+
+    safePolls.forEach(poll => {
+
+      const pollId =
+        String(poll.id);
+
+      const options =
+        Array.isArray(poll.options)
+          ? poll.options
+          : [];
+
+      poll.total_votes =
+        pollVoteCounts.get(
+          pollId
+        ) || 0;
+
+      poll.options =
+        options.map(option => {
+
+          const optionId =
+            String(option.id);
+
+          return {
+            ...option,
+
+            vote_count:
+              optionVoteCounts.get(
+                optionId
+              ) || 0
+          };
+
+        });
+
+    });
+
+
+    pollsCache =
+      safePolls;
+
+
+    /* -------------------------
+       LICZNIK ANKIET
+    ------------------------- */
+
+    document.getElementById(
+      "pollCount"
+    ).textContent =
+      safePolls.length;
+
+
+    /* -------------------------
+       BRAK ANKIET
+    ------------------------- */
+
+    if (safePolls.length === 0) {
+
+      container.innerHTML = `
+        <div class="card empty">
+
+          <div class="empty-icon">
+            📊
+          </div>
+
+          <h3>
+            Brak ankiet
+          </h3>
+
+          <p>
+            Utwórz pierwszą ankietę powyżej.
+          </p>
+
+        </div>
+      `;
+
+      return;
+    }
+
+
+    /* -------------------------
+       RENDER
+    ------------------------- */
+
+    container.innerHTML = "";
+
+    safePolls.forEach(poll => {
+
+      /*
+       * Bierzemy informację o głosie
+       * bezpośrednio z tabeli votes.
+       *
+       * LocalStorage służy tylko jako
+       * dodatkowa pamięć przeglądarki.
+       */
+
+      const voted =
+        currentUserVotes.has(
+          String(poll.id)
+        ) ||
+        hasLocalVote(poll.id);
+
+      renderPoll(
+        poll,
+        voted
+      );
+
+    });
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "LOAD POLLS ERROR:",
+      error
+    );
+
+    document.getElementById(
+      "pollCount"
+    ).textContent = "0";
+
+    container.innerHTML = `
+      <div class="card empty">
+
+        <div class="empty-icon">
+          ⚠️
+        </div>
+
+        <h3>
+          Nie udało się załadować ankiet
+        </h3>
+
+        <p>
+          ${escapeHtml(
+            readableError(error)
+          )}
+        </p>
+
+        <button
+          class="retry-button"
+          type="button"
+          onclick="loadPolls()"
+        >
+          Spróbuj ponownie
+        </button>
+
+      </div>
+    `;
+
+  }
+
+  finally {
+
+    isLoading = false;
+
+  }
+
+}
+
+
+/* =========================================================
+   RENDER ANKIETY
+========================================================= */
+
+function renderPoll(
+  poll,
+  hasVoted
+) {
+
+  const container =
+    document.getElementById("polls");
+
+  const card =
+    document.createElement("article");
+
+  card.className =
+    "card poll";
+
+
+  /* -------------------------
+     GÓRA
+  ------------------------- */
+
+  const top =
+    document.createElement("div");
+
+  top.className =
+    "poll-top";
+
+
+  const question =
+    document.createElement("h2");
+
+  question.className =
+    "question";
+
+  question.textContent =
+    poll.question;
+
+  top.appendChild(question);
+
+
+  /* -------------------------
+     USUWANIE PRZEZ AUTORA
+  ------------------------- */
+
+  if (
+    String(poll.author_id) ===
+    String(userId)
+  ) {
+
+    const deleteButton =
+      document.createElement("button");
+
+    deleteButton.type =
+      "button";
+
+    deleteButton.className =
+      "delete-button";
+
+    deleteButton.textContent =
+      "🗑️ Usuń";
+
+    deleteButton.addEventListener(
+      "click",
+      () => {
+
+        openDeleteModal(
+          poll.id
+        );
+
+      }
+    );
+
+    top.appendChild(
+      deleteButton
+    );
+
+  }
+
+
+  card.appendChild(top);
+
+
+  /* -------------------------
+     OPCJE
+  ------------------------- */
+
+  const options =
+    Array.isArray(poll.options)
+      ? poll.options
+      : [];
+
+
+  /* -------------------------
+     CAŁKOWITA LICZBA GŁOSÓW
+  ------------------------- */
+
+  const totalVotes =
+    options.reduce(
+      (sum, option) => {
+
+        return sum +
+          toSafeNumber(
+            option.vote_count
+          );
+
+      },
+      0
+    );
+
+
+  /*
+   * To jest celowo liczone
+   * ponownie z odpowiedzi.
+   *
+   * Dzięki temu suma procentów
+   * bazuje dokładnie na tych samych
+   * liczbach, które są wyświetlane.
+   */
+
+  poll.total_votes =
+    totalVotes;
+
+
+  /* -------------------------
+     META
+  ------------------------- */
+
+  const meta =
+    document.createElement("div");
+
+  meta.className =
+    "meta";
+
+
+  const dateBadge =
+    document.createElement("span");
+
+  dateBadge.className =
+    "badge";
+
+
+  let dateText =
+    "brak daty";
+
+  if (poll.created_at) {
+
+    const date =
+      new Date(
+        poll.created_at
+      );
+
+    if (
+      !Number.isNaN(
+        date.getTime()
+      )
+    ) {
+
+      dateText =
+        date.toLocaleDateString(
+          "pl-PL"
+        );
+
+    }
+
+  }
+
+
+  dateBadge.textContent =
+    "📅 " + dateText;
+
+  meta.appendChild(
+    dateBadge
+  );
+
+
+  const votesBadge =
+    document.createElement("span");
+
+  votesBadge.className =
+    "badge";
+
+  votesBadge.textContent =
+    "🗳️ " +
+    totalVotes +
+    " " +
+    pluralize(
+      totalVotes,
+      "głos",
+      "głosy",
+      "głosów"
+    );
+
+  meta.appendChild(
+    votesBadge
+  );
+
+
+  if (hasVoted) {
+
+    const votedBadge =
+      document.createElement("span");
+
+    votedBadge.className =
+      "badge voted";
+
+    votedBadge.textContent =
+      "✓ Zagłosowano";
+
+    meta.appendChild(
+      votedBadge
+    );
+
+  }
+
+
+  card.appendChild(meta);
+
+
+  /* -------------------------
+     ODPOWIEDZI
+  ------------------------- */
+
+  options.forEach(
+    (option, index) => {
+
+      const row =
+        document.createElement("div");
+
+      row.className =
+        "option";
+
+
+      const optionVotes =
+        toSafeNumber(
+          option.vote_count
+        );
+
+
+      /*
+       * Procent jest liczony:
+       *
+       * głosy odpowiedzi
+       * ---------------- × 100
+       * wszystkie głosy
+       */
+
+      let percentage = 0;
+
+      if (totalVotes > 0) {
+
+        percentage =
+          Math.round(
+            (
+              optionVotes /
+              totalVotes
+            ) * 100
+          );
+
+      }
+
+
+      percentage =
+        Math.max(
+          0,
+          Math.min(
+            100,
+            percentage
+          )
+        );
+
+
+      /* -------------------------
+         PRZYCISK
+      ------------------------- */
+
+      const button =
+        document.createElement("button");
+
+      button.type =
+        "button";
+
+      button.className =
+        "vote-button";
+
+
+      if (hasVoted) {
+
+        button.disabled =
+          true;
+
+      }
+
+
+      /* -------------------------
+         PASEK
+      ------------------------- */
+
+      const progress =
+        document.createElement("div");
+
+      progress.className =
+        "progress";
+
+      progress.style.width =
+        percentage + "%";
+
+      button.appendChild(
+        progress
+      );
+
+
+      /* -------------------------
+         TREŚĆ
+      ------------------------- */
+
+      const content =
+        document.createElement("div");
+
+      content.className =
+        "vote-content";
+
+
+      const optionText =
+        document.createElement("span");
+
+      optionText.className =
+        "option-text";
+
+      optionText.textContent =
+        option.text;
+
+
+      const percent =
+        document.createElement("span");
+
+      percent.className =
+        "percent";
+
+      percent.textContent =
+        percentage + "%";
+
+
+      content.appendChild(
+        optionText
+      );
+
+      content.appendChild(
+        percent
+      );
+
+      button.appendChild(
+        content
+      );
+
+
+      /* -------------------------
+         GŁOSOWANIE
+      ------------------------- */
+
+      if (!hasVoted) {
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            vote(
+              poll.id,
+              option.id
+            );
+
+          }
+        );
+
+      }
+
+
+      row.appendChild(
+        button
+      );
+
+
+      /* -------------------------
+         INFORMACJE
+      ------------------------- */
+
+      const info =
+        document.createElement("div");
+
+      info.className =
+        "option-info";
+
+
+      const voteText =
+        document.createElement("span");
+
+      voteText.textContent =
+        optionVotes +
+        " " +
+        pluralize(
+          optionVotes,
+          "głos",
+          "głosy",
+          "głosów"
+        );
+
+
+      const answerText =
+        document.createElement("span");
+
+      answerText.textContent =
+        "Odpowiedź " +
+        (index + 1);
+
+
+      info.appendChild(
+        voteText
+      );
+
+      info.appendChild(
+        answerText
+      );
+
+
+      row.appendChild(
+        info
+      );
+
+      card.appendChild(
+        row
+      );
+
+    }
+  );
+
+
+  container.appendChild(
+    card
+  );
+
+}
+
+
+/* =========================================================
+   GŁOSOWANIE
+========================================================= */
+
+async function vote(
+  pollId,
+  optionId
+) {
+
+  if (
+    hasLocalVote(pollId)
+  ) {
+
+    showMessage(
+      "Na tę ankietę już głosowałeś."
+    );
+
+    await loadPolls();
+
+    return;
+  }
+
+
+  const poll =
+    pollsCache.find(
+      item =>
+        String(item.id) ===
+        String(pollId)
+    );
+
+
+  if (!poll) {
+
+    showMessage(
+      "Nie znaleziono ankiety."
+    );
+
+    return;
+  }
+
+
+  /*
+   * Sprawdzamy, czy odpowiedź
+   * faktycznie należy do tej ankiety.
+   */
+
+  const optionExists =
+    Array.isArray(poll.options) &&
+    poll.options.some(
+      option =>
+        String(option.id) ===
+        String(optionId)
+    );
+
+
+  if (!optionExists) {
+
+    showMessage(
+      "Wybrana odpowiedź nie należy do tej ankiety."
+    );
+
+    return;
+  }
+
+
+  try {
+
+    /*
+     * Blokujemy przyciski tylko podczas
+     * wykonywania operacji.
+     */
+
+    document
+      .querySelectorAll(
+        ".vote-button"
+      )
+      .forEach(button => {
+
+        button.disabled = true;
+
+      });
+
+
+    /*
+     * Wstawiamy JEDEN rekord.
+     */
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("votes")
+        .insert({
+          poll_id: pollId,
+          option_id: optionId,
+          user_id: userId
+        });
+
+
+    if (error) {
+
+      if (
+        error.code === "23505"
+      ) {
+
+        rememberLocalVote(
+          pollId
+        );
+
+        showMessage(
+          "Na tę ankietę już głosowałeś."
+        );
+
+        await loadPolls();
+
+        return;
+      }
+
+      throw error;
+    }
+
+
+    rememberLocalVote(
+      pollId
+    );
+
+
+    showMessage(
+      "Głos został zapisany!",
+      "success"
+    );
+
+
+    await loadPolls();
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "VOTE ERROR:",
+      error
+    );
+
+    showMessage(
+      readableError(error)
+    );
+
+    await loadPolls();
+
+  }
+
+}
+
+
+/* =========================================================
+   TWORZENIE ANKIETY
+========================================================= */
 
 async function createPoll() {
 
@@ -1403,35 +4207,57 @@ async function createPoll() {
   if (!question) {
 
     showMessage(
-      "Wpisz pytanie."
+      "Wpisz pytanie ankiety."
     );
 
     return;
-
   }
 
 
-  if (
-    options.length < 2
-  ) {
+  if (options.length < 2) {
 
     showMessage(
       "Dodaj przynajmniej 2 odpowiedzi."
     );
 
     return;
-
   }
 
 
-  button.disabled =
-    true;
+  const normalized =
+    options.map(
+      option =>
+        option.toLowerCase()
+    );
+
+
+  if (
+    new Set(normalized).size !==
+    options.length
+  ) {
+
+    showMessage(
+      "Odpowiedzi w jednej ankiecie muszą być różne."
+    );
+
+    return;
+  }
+
+
+  button.disabled = true;
 
   button.textContent =
     "Tworzenie...";
 
 
+  let createdPollId = null;
+
+
   try {
+
+    /* -------------------------
+       ANKIETA
+    ------------------------- */
 
     const {
       data: poll,
@@ -1443,25 +4269,37 @@ async function createPoll() {
           question: question,
           author_id: userId
         })
-        .select()
+        .select("id")
         .single();
 
 
     if (pollError) {
-
       throw pollError;
+    }
+
+
+    if (!poll || !poll.id) {
+
+      throw new Error(
+        "Nie udało się uzyskać ID ankiety."
+      );
 
     }
 
 
+    createdPollId =
+      poll.id;
+
+
+    /* -------------------------
+       ODPOWIEDZI
+    ------------------------- */
+
     const optionRows =
-      options.map(
-        text => ({
-          poll_id: poll.id,
-          text: text,
-          votes: 0
-        })
-      );
+      options.map(text => ({
+        poll_id: poll.id,
+        text: text
+      }));
 
 
     const {
@@ -1477,9 +4315,8 @@ async function createPoll() {
     if (optionsError) {
 
       /*
-       * Spróbuj usunąć ankietę,
-       * jeżeli dodawanie odpowiedzi
-       * się nie udało.
+       * Spróbuj posprzątać,
+       * jeżeli odpowiedzi się nie utworzyły.
        */
 
       await supabaseClient
@@ -1487,34 +4324,34 @@ async function createPoll() {
         .delete()
         .eq(
           "id",
-          poll.id
+          createdPollId
+        )
+        .eq(
+          "author_id",
+          userId
         );
 
-
       throw optionsError;
-
     }
 
 
-    document.getElementById(
-      "question"
-    ).value = "";
+    /* -------------------------
+       CZYSZCZENIE
+    ------------------------- */
 
-    document.getElementById(
-      "option1"
-    ).value = "";
-
-    document.getElementById(
-      "option2"
-    ).value = "";
-
-    document.getElementById(
-      "option3"
-    ).value = "";
-
-    document.getElementById(
+    [
+      "question",
+      "option1",
+      "option2",
+      "option3",
       "option4"
-    ).value = "";
+    ].forEach(id => {
+
+      document.getElementById(
+        id
+      ).value = "";
+
+    });
 
 
     showMessage(
@@ -1525,24 +4362,26 @@ async function createPoll() {
 
     await loadPolls();
 
+  }
 
-  } catch (error) {
+  catch (error) {
 
     console.error(
-      "CREATE ERROR:",
+      "CREATE POLL ERROR:",
       error
     );
 
     showMessage(
-      error.message ||
-      "Nie udało się utworzyć ankiety."
+      readableError(error)
     );
 
+  }
 
-  } finally {
+  finally {
 
-    button.disabled =
-      false;
+    butto  finally {
+
+    button.disabled = false;
 
     button.textContent =
       "＋ Utwórz ankietę";
@@ -1551,171 +4390,14 @@ async function createPoll() {
 
 }
 
-  /* =====================================================
-   GŁOSOWANIE
-===================================================== */
 
-async function vote(pollId, optionId) {
-
-  if (hasVoted(pollId)) {
-
-    showMessage(
-      "Na tę ankietę już głosowałeś."
-    );
-
-    return;
-  }
-
-
-  try {
-
-    /*
-     * Najpierw zapisujemy głos.
-     *
-     * Tabela votes:
-     * poll_id
-     * user_id
-     *
-     * Para poll_id + user_id powinna
-     * mieć UNIQUE w Supabase.
-     */
-
-    const {
-      error: voteError
-    } =
-      await supabaseClient
-        .from("votes")
-        .insert({
-          poll_id: pollId,
-          user_id: userId
-        });
-
-
-    if (voteError) {
-
-      /*
-       * 23505 = użytkownik już oddał
-       * głos na tę ankietę.
-       */
-
-      if (voteError.code === "23505") {
-
-        rememberVote(pollId);
-
-        showMessage(
-          "Na tę ankietę już głosowałeś."
-        );
-
-        await loadPolls();
-
-        return;
-      }
-
-
-      throw voteError;
-    }
-
-
-    /*
-     * Pobieramy aktualną liczbę głosów
-     * wybranej odpowiedzi.
-     */
-
-    const {
-      data: option,
-      error: optionError
-    } =
-      await supabaseClient
-        .from("options")
-        .select("votes")
-        .eq("id", optionId)
-        .single();
-
-
-    if (optionError) {
-
-      throw optionError;
-
-    }
-
-
-    const currentVotes =
-      Number(option.votes || 0);
-
-
-    /*
-     * Zwiększamy licznik o 1.
-     */
-
-    const {
-      error: updateError
-    } =
-      await supabaseClient
-        .from("options")
-        .update({
-          votes: currentVotes + 1
-        })
-        .eq("id", optionId);
-
-
-    if (updateError) {
-
-      throw updateError;
-
-    }
-
-
-    /*
-     * Zapamiętujemy głos w tej
-     * przeglądarce.
-     */
-
-    rememberVote(pollId);
-
-
-    showMessage(
-      "Głos został zapisany!",
-      "success"
-    );
-
-
-    /*
-     * Pobieramy aktualne wyniki.
-     */
-
-    await loadPolls();
-
-
-  } catch (error) {
-
-    console.error(
-      "VOTE ERROR:",
-      error
-    );
-
-
-    showMessage(
-      error.message ||
-      "Nie udało się oddać głosu."
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   USUWANIE ANKIETY
-===================================================== */
-
-let pollToDelete = null;
-
+/* =========================================================
+   USUWANIE — MODAL
+========================================================= */
 
 function openDeleteModal(pollId) {
 
-  pollToDelete =
-    pollId;
-
+  pollToDelete = pollId;
 
   document
     .getElementById("deleteModal")
@@ -1726,9 +4408,7 @@ function openDeleteModal(pollId) {
 
 function closeDeleteModal() {
 
-  pollToDelete =
-    null;
-
+  pollToDelete = null;
 
   document
     .getElementById("deleteModal")
@@ -1737,41 +4417,107 @@ function closeDeleteModal() {
 }
 
 
+/* =========================================================
+   USUWANIE ANKIETY
+========================================================= */
+
 async function deletePoll() {
 
   if (pollToDelete === null) {
-
     return;
-
   }
 
-
-  const pollId =
-    pollToDelete;
-
+  const pollId = pollToDelete;
 
   const button =
     document.getElementById(
-      "confirmDelete"
+      "confirmDeleteButton"
     );
 
-
-  button.disabled =
-    true;
+  button.disabled = true;
 
   button.textContent =
     "Usuwanie...";
 
-
   try {
 
-    /*
-     * Usuwamy tylko ankietę,
-     * której autorem jest aktualny użytkownik.
-     */
+    /* -------------------------
+       SPRAWDZENIE AUTORA
+    ------------------------- */
+
+    const poll =
+      pollsCache.find(
+        item =>
+          String(item.id) ===
+          String(pollId)
+      );
+
+    if (!poll) {
+
+      throw new Error(
+        "Nie znaleziono ankiety."
+      );
+
+    }
+
+    if (
+      String(poll.author_id) !==
+      String(userId)
+    ) {
+
+      throw new Error(
+        "Tylko autor ankiety może ją usunąć."
+      );
+
+    }
+
+
+    /* -------------------------
+       USUNIĘCIE GŁOSÓW
+    ------------------------- */
 
     const {
-      error
+      error: votesError
+    } =
+      await supabaseClient
+        .from("votes")
+        .delete()
+        .eq(
+          "poll_id",
+          pollId
+        );
+
+    if (votesError) {
+      throw votesError;
+    }
+
+
+    /* -------------------------
+       USUNIĘCIE ODPOWIEDZI
+    ------------------------- */
+
+    const {
+      error: optionsError
+    } =
+      await supabaseClient
+        .from("options")
+        .delete()
+        .eq(
+          "poll_id",
+          pollId
+        );
+
+    if (optionsError) {
+      throw optionsError;
+    }
+
+
+    /* -------------------------
+       USUNIĘCIE ANKIETY
+    ------------------------- */
+
+    const {
+      error: pollError
     } =
       await supabaseClient
         .from("polls")
@@ -1785,19 +4531,28 @@ async function deletePoll() {
           userId
         );
 
-
-    if (error) {
-
-      throw error;
-
+    if (pollError) {
+      throw pollError;
     }
 
 
-    /*
-     * Usuwanie powiązanych options/votes
-     * powinno być skonfigurowane w Supabase
-     * przez ON DELETE CASCADE.
-     */
+    /* -------------------------
+       LOCAL STORAGE
+    ------------------------- */
+
+    const remainingVotes =
+      getLocalVotes().filter(
+        id =>
+          String(id) !==
+          String(pollId)
+      );
+
+    localStorage.setItem(
+      "voted_polls",
+      JSON.stringify(
+        remainingVotes
+      )
+    );
 
 
     closeDeleteModal();
@@ -1811,118 +4566,85 @@ async function deletePoll() {
 
     await loadPolls();
 
+  }
 
-  } catch (error) {
+  catch (error) {
 
     console.error(
-      "DELETE ERROR:",
+      "DELETE POLL ERROR:",
       error
     );
 
-
     showMessage(
-      error.message ||
-      "Nie udało się usunąć ankiety."
+      readableError(error)
     );
 
+  }
 
-  } finally {
+  finally {
 
-    button.disabled =
-      false;
+    button.disabled = false;
 
     button.textContent =
-      "Usuń";
+      "Usuń ankietę";
 
   }
 
 }
 
 
-/* =====================================================
-   POMOCNICZE
-===================================================== */
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
 
-function pluralize(
-  number,
-  one,
-  few,
-  many
-) {
-
-  number =
-    Math.abs(
-      Number(number)
-    );
-
-
-  if (number === 1) {
-
-    return one;
-
-  }
-
-
-  const lastTwo =
-    number % 100;
-
-  const last =
-    number % 10;
-
-
-  if (
-    last >= 2 &&
-    last <= 4 &&
-    !(
-      lastTwo >= 12 &&
-      lastTwo <= 14
-    )
-  ) {
-
-    return few;
-
-  }
-
-
-  return many;
-
-}
-
-
-function escapeHtml(text) {
+function escapeHtml(value) {
 
   const div =
-    document.createElement(
-      "div"
-    );
-
+    document.createElement("div");
 
   div.textContent =
-    text ?? "";
-
+    String(value ?? "");
 
   return div.innerHTML;
 
 }
 
 
-/* =====================================================
-   OBSŁUGA MODALA
-===================================================== */
+/* =========================================================
+   MODAL
+========================================================= */
 
 document
-  .getElementById("deleteModal")
+  .getElementById(
+    "cancelDeleteButton"
+  )
   .addEventListener(
     "click",
-    function(event) {
+    closeDeleteModal
+  );
 
-      /*
-       * Kliknięcie w przyciemnione tło
-       * zamyka modal.
-       */
+
+document
+  .getElementById(
+    "confirmDeleteButton"
+  )
+  .addEventListener(
+    "click",
+    deletePoll
+  );
+
+
+document
+  .getElementById(
+    "deleteModal"
+  )
+  .addEventListener(
+    "click",
+    event => {
 
       if (
-        event.target === this
+        event.target.id ===
+        "deleteModal"
       ) {
 
         closeDeleteModal();
@@ -1935,7 +4657,7 @@ document
 
 document.addEventListener(
   "keydown",
-  function(event) {
+  event => {
 
     if (
       event.key === "Escape"
@@ -1949,9 +4671,57 @@ document.addEventListener(
 );
 
 
-/* =====================================================
-   START STRONY
-===================================================== */
+/* =========================================================
+   PRZYCISK TWORZENIA
+========================================================= */
+
+document
+  .getElementById(
+    "createButton"
+  )
+  .addEventListener(
+    "click",
+    createPoll
+  );
+
+
+/* =========================================================
+   ENTER W FORMULARZU
+========================================================= */
+
+[
+  "question",
+  "option1",
+  "option2",
+  "option3",
+  "option4"
+].forEach(id => {
+
+  document
+    .getElementById(id)
+    .addEventListener(
+      "keydown",
+      event => {
+
+        if (
+          event.key === "Enter"
+        ) {
+
+          event.preventDefault();
+
+          createPoll();
+
+        }
+
+      }
+    );
+
+});
+
+
+/* =========================================================
+   START
+========================================================= */
 
 loadPolls();
 
