@@ -1,170 +1,644 @@
 <!DOCTYPE html>
 <html lang="pl">
-
 <head>
-
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <title>Głosowanie — ankiety</title>
 
-  <title>Głosowanie</title>
-
-  <script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-  ></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: rgba(255,255,255,.92);
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --primary: #4f46e5;
+      --primary-dark: #4338ca;
+      --danger: #dc2626;
+      --danger-dark: #b91c1c;
+      --success: #16a34a;
+      --shadow: 0 10px 35px rgba(15, 23, 42, .08);
+    }
 
     * {
       box-sizing: border-box;
     }
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f3f4f6;
-      color: #111827;
+    html {
+      scroll-behavior: smooth;
     }
 
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+      background:
+        radial-gradient(circle at top left, #e0e7ff 0, transparent 35%),
+        radial-gradient(circle at top right, #dbeafe 0, transparent 30%),
+        var(--bg);
+      color: var(--text);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    /* =========================
+       HEADER
+    ========================= */
+
     header {
-      background: #111827;
+      position: relative;
+      overflow: hidden;
       color: white;
-      padding: 25px 15px;
+      background:
+        linear-gradient(
+          135deg,
+          #111827 0%,
+          #312e81 55%,
+          #4f46e5 100%
+        );
+      padding: 55px 20px 75px;
+    }
+
+    header::before,
+    header::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,.08);
+    }
+
+    header::before {
+      width: 260px;
+      height: 260px;
+      right: -80px;
+      top: -100px;
+    }
+
+    header::after {
+      width: 180px;
+      height: 180px;
+      left: -70px;
+      bottom: -90px;
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: auto;
       text-align: center;
     }
 
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 70px;
+      height: 70px;
+      margin-bottom: 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.14);
+      backdrop-filter: blur(12px);
+      font-size: 34px;
+      box-shadow: 0 12px 35px rgba(0,0,0,.18);
+    }
+
     header h1 {
-      margin: 0 0 10px;
+      margin: 0;
+      font-size: clamp(34px, 7vw, 58px);
+      letter-spacing: -2px;
     }
 
     header p {
-      margin: 0;
-      color: #d1d5db;
+      max-width: 600px;
+      margin: 15px auto 0;
+      color: rgba(255,255,255,.78);
+      font-size: 17px;
+      line-height: 1.6;
     }
+
+    /* =========================
+       MAIN
+    ========================= */
 
     main {
-      max-width: 800px;
-      margin: 30px auto;
-      padding: 0 15px;
+      position: relative;
+      max-width: 900px;
+      margin: -35px auto 60px;
+      padding: 0 18px;
+      z-index: 2;
     }
 
-    .box {
-      background: white;
-      padding: 20px;
-      border-radius: 15px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, .08);
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,.8);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(16px);
     }
 
-    input {
+    /* =========================
+       CREATE
+    ========================= */
+
+    .create-card {
+      padding: 28px;
+      margin-bottom: 30px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      margin-bottom: 22px;
+    }
+
+    .section-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 13px;
+      background: #eef2ff;
+      color: var(--primary);
+      font-size: 21px;
+    }
+
+    .section-title h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .section-title p {
+      margin: 3px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .field {
+      margin-bottom: 12px;
+    }
+
+    .field input {
       width: 100%;
-      padding: 12px;
-      margin: 7px 0;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      font-size: 16px;
-    }
-
-    input:focus {
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
       outline: none;
-      border-color: #2563eb;
+      background: #fff;
+      color: var(--text);
+      transition: .2s;
     }
 
-    button {
-      padding: 12px 18px;
-      border: none;
-      border-radius: 8px;
-      background: #2563eb;
-      color: white;
-      cursor: pointer;
-      font-weight: bold;
-      margin-top: 8px;
+    .field input::placeholder {
+      color: #9ca3af;
     }
 
-    button:hover {
-      background: #1d4ed8;
+    .field input:focus {
+      border-color: #818cf8;
+      box-shadow: 0 0 0 4px rgba(99,102,241,.12);
     }
 
-    button:disabled {
-      background: #9ca3af;
-      cursor: not-allowed;
+    .options-label {
+      display: block;
+      margin: 18px 0 8px;
+      color: #374151;
+      font-size: 13px;
+      font-weight: 700;
     }
 
     .create-button {
       width: 100%;
-      margin-top: 12px;
-    }
-
-    .option {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin: 10px 0;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 18px;
+      padding: 14px 20px;
+      border: 0;
+      border-radius: 13px;
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      color: white;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(79,70,229,.25);
+      transition: .2s;
     }
 
-    .option button {
-      flex: 1;
-      text-align: left;
-      margin: 0;
+    .create-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 11px 25px rgba(79,70,229,.32);
     }
 
-    .votes {
-      min-width: 80px;
-      color: #4b5563;
+    .create-button:disabled {
+      opacity: .65;
+      cursor: wait;
+      transform: none;
+    }
+
+    /* =========================
+       MESSAGE
+    ========================= */
+
+    #message {
+      margin-bottom: 18px;
+    }
+
+    .message {
+      padding: 14px 16px;
+      border-radius: 13px;
       font-size: 14px;
-      text-align: right;
+      font-weight: 600;
     }
 
-    .empty {
-      text-align: center;
-      color: #6b7280;
-      padding: 30px;
-    }
-
-    .error {
-      background: #fee2e2;
-      color: #991b1b;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-    }
-
-    .success {
+    .message.success {
       background: #dcfce7;
       color: #166534;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 20px;
+      border: 1px solid #bbf7d0;
+    }
+
+    .message.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    /* =========================
+       POLLS HEADER
+    ========================= */
+
+    .polls-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 2px 15px;
+    }
+
+    .polls-heading h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .poll-count {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #e0e7ff;
+      color: #4338ca;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    /* =========================
+       POLL CARD
+    ========================= */
+
+    .poll-card {
+      padding: 24px;
+      margin-bottom: 18px;
+      animation: fadeIn .35s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .poll-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 15px;
     }
 
     .poll-title {
-      margin-top: 0;
+      margin: 0;
+      font-size: 21px;
+      line-height: 1.35;
+      word-break: break-word;
     }
 
-    .loading {
-      text-align: center;
-      color: #6b7280;
-      padding: 20px;
+    .delete-button {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 11px;
+      border: 1px solid #fecaca;
+      border-radius: 10px;
+      background: #fff;
+      color: var(--danger);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .2s;
     }
+
+    .delete-button:hover {
+      background: #fef2f2;
+      color: var(--danger-dark);
+    }
+
+    .poll-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 9px 0 20px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .meta-badge {
+      padding: 5px 8px;
+      border-radius: 7px;
+      background: #f3f4f6;
+    }
+
+    /* =========================
+       OPTIONS
+    ========================= */
+
+    .option-row {
+      margin: 12px 0;
+    }
+
+    .vote-button {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      min-height: 52px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: white;
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .vote-button:hover:not(:disabled) {
+      border-color: #818cf8;
+      transform: translateY(-1px);
+      box-shadow: 0 5px 15px rgba(79,70,229,.10);
+    }
+
+    .vote-button:disabled {
+      cursor: default;
+    }
+
+    .option-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-weight: 600;
+    }
+
+    .option-text {
+      overflow-wrap: anywhere;
+    }
+
+    .option-number {
+      flex-shrink: 0;
+      color: #6b7280;
+      font-size: 13px;
+    }
+
+    .progress {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 0;
+      background: #eef2ff;
+      transition: width .5s ease;
+    }
+
+    .option-result {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+      padding: 0 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .voted {
+      border-color: #6366f1 !important;
+      background: #eef2ff !important;
+    }
+
+    .voted .progress {
+      background: #ddd6fe;
+    }
+
+    .your-vote {
+      color: #4f46e5;
+      font-weight: 800;
+    }
+
+    /* =========================
+       EMPTY
+    ========================= */
+
+    .empty {
+      padding: 50px 25px;
+      text-align: center;
+    }
+
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .empty h3 {
+      margin: 0 0 7px;
+      font-size: 20px;
+    }
+
+    .empty p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    /* =========================
+       LOADING
+    ========================= */
+
+    .loading {
+      padding: 45px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .spinner {
+      width: 30px;
+      height: 30px;
+      margin: 0 auto 12px;
+      border: 3px solid #e5e7eb;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* =========================
+       CONFIRM MODAL
+    ========================= */
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(15,23,42,.55);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    .modal {
+      width: min(420px, 100%);
+      padding: 25px;
+      border-radius: 20px;
+      background: white;
+      box-shadow: 0 25px 70px rgba(0,0,0,.25);
+      animation: modalIn .2s ease;
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.96);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .modal h3 {
+      margin: 0 0 8px;
+    }
+
+    .modal p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .modal-buttons button {
+      flex: 1;
+      padding: 12px;
+      border-radius: 11px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .cancel-button {
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--text);
+    }
+
+    .confirm-delete {
+      border: 0;
+      background: var(--danger);
+      color: white;
+    }
+
+    .confirm-delete:hover {
+      background: var(--danger-dark);
+    }
+
+    /* =========================
+       FOOTER
+    ========================= */
+
+    footer {
+      padding: 25px;
+      text-align: center;
+      color: #9ca3af;
+      font-size: 12px;
+    }
+
+    /* =========================
+       MOBILE
+    ========================= */
 
     @media (max-width: 600px) {
 
-      .option {
-        flex-direction: column;
-        align-items: stretch;
+      header {
+        padding: 40px 18px 65px;
       }
 
-      .votes {
-        text-align: left;
+      main {
+        margin-top: -28px;
+        padding: 0 12px;
+      }
+
+      .create-card,
+      .poll-card {
+        padding: 19px;
+        border-radius: 19px;
+      }
+
+      .poll-top {
+        flex-direction: column;
+      }
+
+      .delete-button {
+        align-self: flex-end;
+      }
+
+      .poll-title {
+        font-size: 19px;
+      }
+
+      .modal-buttons {
+        flex-direction: column-reverse;
       }
 
     }
 
   </style>
-
 </head>
 
 
@@ -172,11 +646,18 @@
 
 <header>
 
-  <h1>🗳️ Głosowanie</h1>
+  <div class="header-content">
 
-  <p>
-    Twórz ankiety i głosuj razem z innymi
-  </p>
+    <div class="logo">🗳️</div>
+
+    <h1>Głosowanie</h1>
+
+    <p>
+      Twórz własne ankiety, poznawaj opinie
+      i głosuj razem z innymi.
+    </p>
+
+  </div>
 
 </header>
 
@@ -186,86 +667,195 @@
   <div id="message"></div>
 
 
-  <!-- TWORZENIE ANKIETY -->
+  <!-- =========================
+       CREATE POLL
+  ========================== -->
 
-  <div class="box">
+  <section class="card create-card">
 
-    <h2>➕ Utwórz ankietę</h2>
+    <div class="section-title">
 
-    <input
-      id="question"
-      type="text"
-      maxlength="200"
-      placeholder="Wpisz pytanie ankiety"
-    >
+      <div class="section-icon">
+        ＋
+      </div>
 
-    <input
-      id="option1"
-      type="text"
-      maxlength="100"
-      placeholder="Odpowiedź A"
-    >
+      <div>
 
-    <input
-      id="option2"
-      type="text"
-      maxlength="100"
-      placeholder="Odpowiedź B"
-    >
+        <h2>Utwórz ankietę</h2>
 
-    <input
-      id="option3"
-      type="text"
-      maxlength="100"
-      placeholder="Odpowiedź C"
-    >
+        <p>
+          Zadaj pytanie i dodaj odpowiedzi.
+        </p>
 
-    <input
-      id="option4"
-      type="text"
-      maxlength="100"
-      placeholder="Odpowiedź D"
-    >
+      </div>
+
+    </div>
+
+
+    <div class="field">
+
+      <input
+        id="question"
+        type="text"
+        maxlength="200"
+        autocomplete="off"
+        placeholder="Np. Jaki jest Twój ulubiony sport?"
+      >
+
+    </div>
+
+
+    <span class="options-label">
+      Odpowiedzi
+    </span>
+
+
+    <div class="field">
+      <input
+        id="option1"
+        type="text"
+        maxlength="100"
+        autocomplete="off"
+        placeholder="Odpowiedź A"
+      >
+    </div>
+
+    <div class="field">
+      <input
+        id="option2"
+        type="text"
+        maxlength="100"
+        autocomplete="off"
+        placeholder="Odpowiedź B"
+      >
+    </div>
+
+    <div class="field">
+      <input
+        id="option3"
+        type="text"
+        maxlength="100"
+        autocomplete="off"
+        placeholder="Odpowiedź C — opcjonalnie"
+      >
+    </div>
+
+    <div class="field">
+      <input
+        id="option4"
+        type="text"
+        maxlength="100"
+        autocomplete="off"
+        placeholder="Odpowiedź D — opcjonalnie"
+      >
+    </div>
+
 
     <button
       id="createButton"
       class="create-button"
       onclick="createPoll()"
     >
-      Utwórz ankietę
+      <span>＋</span>
+      <span>Utwórz ankietę</span>
     </button>
+
+  </section>
+
+
+  <!-- =========================
+       POLLS
+  ========================== -->
+
+  <div class="polls-heading">
+
+    <h2>📊 Ankiety</h2>
+
+    <span
+      id="pollCount"
+      class="poll-count"
+    >
+      0
+    </span>
 
   </div>
 
 
-  <!-- ANKIETY -->
-
   <div id="polls">
 
-    <div class="loading">
+    <div class="card loading">
+
+      <div class="spinner"></div>
+
       Ładowanie ankiet...
+
     </div>
 
   </div>
 
+
 </main>
+
+
+<footer>
+  Głosowanie • Wszystkie głosy są zapisywane w Supabase
+</footer>
+
+
+<!-- =========================
+     DELETE MODAL
+========================== -->
+
+<div
+  id="deleteModal"
+  class="modal-backdrop"
+>
+
+  <div class="modal">
+
+    <h3>Usunąć ankietę?</h3>
+
+    <p>
+      Ta operacja usunie ankietę oraz jej odpowiedzi.
+      Tej operacji nie można cofnąć.
+    </p>
+
+    <div class="modal-buttons">
+
+      <button
+        class="cancel-button"
+        onclick="closeDeleteModal()"
+      >
+        Anuluj
+      </button>
+
+      <button
+        id="confirmDeleteButton"
+        class="confirm-delete"
+        onclick="confirmDelete()"
+      >
+        Usuń ankietę
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
 
 
 <script>
 
 
-/*
-====================================================
-SUPABASE
-====================================================
-*/
+/* ==================================================
+   SUPABASE
+================================================== */
 
 const SUPABASE_URL =
   "https://hvloevnsrbfmmrkohzxe.supabase.co";
 
 const SUPABASE_KEY =
   "sb_publishable__iN5fmthHgtL_WfMM08sUw_7PCFKJgl";
-
 
 const supabaseClient =
   supabase.createClient(
@@ -274,46 +864,38 @@ const supabaseClient =
   );
 
 
-/*
-====================================================
-IDENTYFIKATOR UŻYTKOWNIKA
-====================================================
-
-Tworzymy identyfikator dla przeglądarki.
-
-Dzięki temu:
-- użytkownik dostaje stały ID,
-- nie może oddać drugiego głosu
-  w tej samej ankiecie,
-- baza dodatkowo pilnuje UNIQUE(poll_id, user_id).
-*/
+/* ==================================================
+   USER ID
+================================================== */
 
 function getUserId() {
 
-  let userId =
+  let id =
     localStorage.getItem("voter_id");
 
-  if (!userId) {
+  if (!id) {
 
-    userId =
+    id =
       crypto.randomUUID();
 
     localStorage.setItem(
       "voter_id",
-      userId
+      id
     );
 
   }
 
-  return userId;
+  return id;
 }
 
 
-/*
-====================================================
-KOMUNIKATY
-====================================================
-*/
+const currentUserId =
+  getUserId();
+
+
+/* ==================================================
+   MESSAGE
+================================================== */
 
 function showMessage(
   message,
@@ -324,24 +906,28 @@ function showMessage(
     document.getElementById("message");
 
   container.innerHTML = `
-    <div class="${type}">
+    <div class="message ${type}">
       ${escapeHtml(message)}
     </div>
   `;
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
 
   setTimeout(() => {
 
     container.innerHTML = "";
 
-  }, 4000);
+  }, 4500);
+
 }
 
 
-/*
-====================================================
-WCZYTYWANIE ANKIET
-====================================================
-*/
+/* ==================================================
+   LOAD POLLS
+================================================== */
 
 async function loadPolls() {
 
@@ -349,7 +935,8 @@ async function loadPolls() {
     document.getElementById("polls");
 
   container.innerHTML = `
-    <div class="loading">
+    <div class="card loading">
+      <div class="spinner"></div>
       Ładowanie ankiet...
     </div>
   `;
@@ -367,6 +954,7 @@ async function loadPolls() {
         id,
         question,
         created_at,
+        author_id,
         options (
           id,
           text,
@@ -384,14 +972,17 @@ async function loadPolls() {
 
   if (error) {
 
-    console.error(
-      "Błąd ładowania:",
-      error
-    );
+    console.error(error);
 
     container.innerHTML = `
-      <div class="box error">
-        Nie udało się wczytać ankiet.
+      <div class="card empty">
+        <div class="empty-icon">⚠️</div>
+
+        <h3>Nie udało się wczytać ankiet</h3>
+
+        <p>
+          ${escapeHtml(error.message)}
+        </p>
       </div>
     `;
 
@@ -399,16 +990,24 @@ async function loadPolls() {
   }
 
 
-  if (!data || data.length === 0) {
+  document.getElementById(
+    "pollCount"
+  ).textContent = data.length;
+
+
+  if (!data.length) {
 
     container.innerHTML = `
-      <div class="box empty">
+      <div class="card empty">
 
-        <h2>Brak ankiet</h2>
+        <div class="empty-icon">
+          📊
+        </div>
+
+        <h3>Brak ankiet</h3>
 
         <p>
-          Nie ma jeszcze żadnych ankiet.
-          Utwórz pierwszą!
+          Utwórz pierwszą ankietę powyżej.
         </p>
 
       </div>
@@ -418,488 +1017,176 @@ async function loadPolls() {
   }
 
 
+  /*
+   Pobieramy informację,
+   w których ankietach użytkownik
+   już głosował.
+  */
+
+  const {
+    data: votes
+  } =
+    await supabaseClient
+
+      .from("votes")
+
+      .select("poll_id")
+
+      .eq(
+        "user_id",
+        currentUserId
+      );
+
+
+  const votedPolls =
+    new Set(
+      (votes || []).map(
+        vote => vote.poll_id
+      )
+    );
+
+
   container.innerHTML = "";
 
 
   data.forEach(poll => {
 
-    const box =
+    const totalVotes =
+      (poll.options || [])
+        .reduce(
+          (sum, option) =>
+            sum + (option.votes || 0),
+          0
+        );
+
+
+    const hasVoted =
+      votedPolls.has(poll.id);
+
+
+    const isAuthor =
+      poll.author_id === currentUserId;
+
+
+    const card =
+      document.createElement("article");
+
+    card.className =
+      "card poll-card";
+
+
+    const top =
       document.createElement("div");
 
-    box.className = "box";
+    top.className =
+      "poll-top";
 
 
     const title =
       document.createElement("h2");
 
-    title.className = "poll-title";
+    title.className =
+      "poll-title";
 
     title.textContent =
       poll.question;
 
 
-    box.appendChild(title);
+    top.appendChild(title);
 
 
-    if (
-      !poll.options ||
-      poll.options.length === 0
-    ) {
+    /*
+     Tylko autor widzi przycisk usuwania.
+    */
 
-      const empty =
-        document.createElement("p");
+    if (isAuthor) {
 
-      empty.textContent =
-        "Brak odpowiedzi.";
-
-      box.appendChild(empty);
-
-      container.appendChild(box);
-
-      return;
-    }
-
-
-    poll.options.forEach(option => {
-
-      const row =
-        document.createElement("div");
-
-      row.className = "option";
-
-
-      const button =
+      const deleteButton =
         document.createElement("button");
 
-      button.textContent =
-        option.text;
+      deleteButton.className =
+        "delete-button";
 
+      deleteButton.innerHTML =
+        "🗑️ Usuń";
 
-      button.onclick =
-        () => vote(
-          poll.id,
-          option.id,
-          button
+      deleteButton.onclick =
+        () => openDeleteModal(
+          poll.id
         );
 
-
-      const votes =
-        document.createElement("span");
-
-      votes.className = "votes";
-
-      votes.textContent =
-        `${option.votes || 0} głosów`;
-
-
-      row.appendChild(button);
-
-      row.appendChild(votes);
-
-      box.appendChild(row);
-
-    });
-
-
-    container.appendChild(box);
-
-  });
-
-}
-
-
-/*
-====================================================
-TWORZENIE ANKIETY
-====================================================
-*/
-
-async function createPoll() {
-
-  const button =
-    document.getElementById(
-      "createButton"
-    );
-
-
-  const question =
-    document
-      .getElementById("question")
-      .value
-      .trim();
-
-
-  const options = [
-
-    document
-      .getElementById("option1")
-      .value
-      .trim(),
-
-    document
-      .getElementById("option2")
-      .value
-      .trim(),
-
-    document
-      .getElementById("option3")
-      .value
-      .trim(),
-
-    document
-      .getElementById("option4")
-      .value
-      .trim()
-
-  ].filter(Boolean);
-
-
-  /*
-  WALIDACJA
-  */
-
-  if (!question) {
-
-    showMessage(
-      "Wpisz pytanie."
-    );
-
-    return;
-  }
-
-
-  if (options.length < 2) {
-
-    showMessage(
-      "Dodaj przynajmniej 2 odpowiedzi."
-    );
-
-    return;
-  }
-
-
-  /*
-  BLOKUJEMY PRZYCISK
-  */
-
-  button.disabled = true;
-
-  button.textContent =
-    "Tworzenie...";
-
-
-  try {
-
-    /*
-    TWORZYMY ANKIETĘ
-    */
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-
-        .from("polls")
-
-        .insert({
-          question: question
-        })
-
-        .select()
-
-        .single();
-
-
-    if (error) {
-
-      console.error(error);
-
-      throw new Error(
-        error.message
+      top.appendChild(
+        deleteButton
       );
+
     }
 
 
-    /*
-    TWORZYMY ODPOWIEDZI
-    */
-
-    const optionRows =
-      options.map(text => ({
-
-        poll_id:
-          data.id,
-
-        text:
-          text,
-
-        votes:
-          0
-
-      }));
+    card.appendChild(top);
 
 
-    const {
-      error: optionError
-    } =
-      await supabaseClient
+    const meta =
+      document.createElement("div");
 
-        .from("options")
-
-        .insert(optionRows);
+    meta.className =
+      "poll-meta";
 
 
-    if (optionError) {
-
-      console.error(
-        optionError
-      );
-
-      throw new Error(
-        optionError.message
-      );
-    }
-
-
-    /*
-    CZYSZCZENIE FORMULARZA
-    */
-
-    document
-      .getElementById("question")
-      .value = "";
-
-
-    document
-      .getElementById("option1")
-      .value = "";
-
-
-    document
-      .getElementById("option2")
-      .value = "";
-
-
-    document
-      .getElementById("option3")
-      .value = "";
-
-
-    document
-      .getElementById("option4")
-      .value = "";
-
-
-    showMessage(
-      "Ankieta została utworzona.",
-      "success"
-    );
-
-
-    await loadPolls();
-
-  }
-
-  catch (error) {
-
-    console.error(
-      "Błąd tworzenia ankiety:",
-      error
-    );
-
-    showMessage(
-      error.message ||
-      "Nie udało się utworzyć ankiety."
-    );
-
-  }
-
-  finally {
-
-    button.disabled = false;
-
-    button.textContent =
-      "Utwórz ankietę";
-
-  }
-
-}
-
-
-/*
-====================================================
-GŁOSOWANIE
-====================================================
-*/
-
-async function vote(
-  pollId,
-  optionId,
-  button
-) {
-
-  /*
-  Zabezpieczenie przed
-  wielokrotnym kliknięciem.
-  */
-
-  button.disabled = true;
-
-  button.textContent =
-    "Głosowanie...";
-
-
-  const userId =
-    getUserId();
-
-
-  try {
-
-    /*
-    GŁOS JEST DODAWANY PRZEZ
-    FUNKCJĘ SQL.
-
-    Funkcja:
-    - sprawdza, czy użytkownik już głosował,
-    - sprawdza poprawność odpowiedzi,
-    - zapisuje głos,
-    - zwiększa licznik atomowo.
-    */
-
-    const {
-      error
-    } =
-      await supabaseClient
-
-        .rpc(
-          "add_vote",
-          {
-            p_poll_id:
-              pollId,
-
-            p_option_id:
-              optionId,
-
-            p_user_id:
-              userId
-          }
-        );
-
-
-    if (error) {
-
-      console.error(
-        "Błąd głosowania:",
-        error
+    const date =
+      new Date(
+        poll.created_at
+      ).toLocaleDateString(
+        "pl-PL"
       );
 
 
-      /*
-      Użytkownik już głosował.
-      */
+    meta.innerHTML = `
+      <span class="meta-badge">
+        📅 ${date}
+      </span>
 
-      if (
-        error.message
-          .includes("ALREADY_VOTED")
-      ) {
+      <span class="meta-badge">
+        🗳️ ${totalVotes}
+        ${pluralize(
+          totalVotes,
+          "głos",
+          "głosy",
+          "głosów"
+        )}
+      </span>
 
-        showMessage(
-          "Na tę ankietę już głosowałeś."
-        );
-
+      ${
+        hasVoted
+          ? `
+            <span
+              class="meta-badge"
+              style="
+                background:#dcfce7;
+                color:#166534;
+              "
+            >
+              ✓ Zagłosowano
+            </span>
+          `
+          : ""
       }
-
-      else if (
-        error.message
-          .includes("INVALID_OPTION")
-      ) {
-
-        showMessage(
-          "Wybrana odpowiedź jest nieprawidłowa."
-        );
-
-      }
-
-      else {
-
-        showMessage(
-          error.message ||
-          "Nie udało się oddać głosu."
-        );
-
-      }
+    `;
 
 
-      return;
-    }
+    card.appendChild(meta);
 
 
-    /*
-    SUKCES
-    */
+    (poll.options || [])
+      .forEach(
+        (option, index) => {
 
-    showMessage(
-      "Twój głos został zapisany.",
-      "success"
-    );
+          const row =
+            document.createElement(
+              "div"
+            );
 
-
-    await loadPolls();
-
-  }
-
-  catch (error) {
-
-    console.error(error);
-
-    showMessage(
-      "Wystąpił błąd podczas głosowania."
-    );
-
-  }
-
-  finally {
-
-    button.disabled = false;
-
-  }
-
-}
+          row.className =
+            "option-row";
 
 
-/*
-====================================================
-BEZPIECZNE WYŚWIETLANIE TEKSTU
-====================================================
-*/
-
-function escapeHtml(text) {
-
-  const div =
-    document.createElement("div");
-
-  div.textContent =
-    text;
-
-  return div.innerHTML;
-
-}
-
-
-/*
-====================================================
-START
-====================================================
-*/
-
-getUserId();
-
-loadPolls();
-
-
-</script>
-
-</body>
-
-</html>
+          con
