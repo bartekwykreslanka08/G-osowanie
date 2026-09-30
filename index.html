@@ -2,595 +2,556 @@
 <html lang="pl">
 <head>
 
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>Głosowanie</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-
-    :root {
-      --bg: #f4f6fb;
-      --card: #ffffff;
-      --text: #111827;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --primary: #4f46e5;
-      --primary-dark: #4338ca;
-      --danger: #dc2626;
-      --success: #16a34a;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family:
-        Inter,
-        Arial,
-        sans-serif;
-      background: var(--bg);
-      color: var(--text);
-    }
-
-    button,
-    input {
-      font: inherit;
-    }
-
-    /* HEADER */
-
-    header {
-      padding: 55px 20px 90px;
-      color: white;
-      text-align: center;
-      background:
-        linear-gradient(
-          135deg,
-          #111827,
-          #312e81,
-          #4f46e5
-        );
-    }
-
-    header .icon {
-      width: 70px;
-      height: 70px;
-      margin: 0 auto 18px;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      border-radius: 22px;
-
-      background:
-        rgba(255,255,255,.14);
-
-      font-size: 34px;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: clamp(36px, 8vw, 60px);
-    }
-
-    header p {
-      max-width: 600px;
-      margin: 14px auto 0;
-      color: rgba(255,255,255,.78);
-      line-height: 1.6;
-    }
-
-    /* MAIN */
-
-    main {
-      width: min(900px, calc(100% - 28px));
-      margin: -45px auto 50px;
-    }
-
-    .card {
-      background: var(--card);
-      border-radius: 22px;
-      box-shadow:
-        0 10px 35px rgba(15,23,42,.08);
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Głosowanie</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+:root {
+  --bg: #f4f6fb;
+  --card: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --primary: #4f46e5;
+  --primary-dark: #4338ca;
+  --danger: #dc2626;
+  --success: #16a34a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+header {
+  padding: 55px 20px 90px;
+  color: white;
+  text-align: center;
+  background: linear-gradient(
+    135deg,
+    #111827,
+    #312e81,
+    #4f46e5
+  );
+}
+
+header .icon {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 22px;
+  background: rgba(255,255,255,.14);
+
+  font-size: 34px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: clamp(36px, 8vw, 60px);
+}
+
+header p {
+  max-width: 600px;
+  margin: 14px auto 0;
+  color: rgba(255,255,255,.78);
+  line-height: 1.6;
+}
+
+main {
+  width: min(900px, calc(100% - 28px));
+  margin: -45px auto 50px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 22px;
+  box-shadow: 0 10px 35px rgba(15,23,42,.08);
+}
+
+.create {
+  padding: 26px;
+  margin-bottom: 30px;
+}
+
+.title-row {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 22px;
+}
+
+.title-icon {
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 13px;
+
+  background: #eef2ff;
+  color: var(--primary);
+
+  font-size: 23px;
+}
+
+.title-row h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.title-row p {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+input {
+  width: 100%;
+  padding: 14px 15px;
+  margin-bottom: 10px;
+
+  border: 1px solid var(--border);
+  border-radius: 12px;
+
+  outline: none;
+  transition: .2s;
+}
+
+input:focus {
+  border-color: #818cf8;
+
+  box-shadow:
+    0 0 0 4px
+    rgba(99,102,241,.12);
+}
+
+.label {
+  display: block;
+  margin: 10px 0 9px;
+
+  color: #374151;
+
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.create-button {
+  width: 100%;
+  padding: 14px;
 
-    /* CREATE */
+  border: 0;
+  border-radius: 12px;
 
-    .create {
-      padding: 26px;
-      margin-bottom: 30px;
-    }
+  background:
+    linear-gradient(
+      135deg,
+      #4f46e5,
+      #6366f1
+    );
 
-    .title-row {
-      display: flex;
-      align-items: center;
-      gap: 13px;
-      margin-bottom: 22px;
-    }
+  color: white;
+  font-weight: bold;
 
-    .title-icon {
-      width: 44px;
-      height: 44px;
+  cursor: pointer;
+}
 
-      display: flex;
-      align-items: center;
-      justify-content: center;
+.create-button:hover {
+  background:
+    linear-gradient(
+      135deg,
+      #4338ca,
+      #4f46e5
+    );
+}
 
-      border-radius: 13px;
+.create-button:disabled {
+  opacity: .6;
+  cursor: wait;
+}
 
-      background: #eef2ff;
-      color: var(--primary);
+#message {
+  margin-bottom: 15px;
+}
 
-      font-size: 23px;
-    }
+.message {
+  padding: 14px 16px;
+  border-radius: 12px;
 
-    .title-row h2 {
-      margin: 0;
-      font-size: 22px;
-    }
+  font-size: 14px;
+  font-weight: 600;
+}
 
-    .title-row p {
-      margin: 3px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
+.message.success {
+  color: #166534;
+  background: #dcfce7;
+}
 
-    input {
-      width: 100%;
-      padding: 14px 15px;
-      margin-bottom: 10px;
+.message.error {
+  color: #991b1b;
+  background: #fee2e2;
+}
 
-      border: 1px solid var(--border);
-      border-radius: 12px;
+.polls-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-      outline: none;
+  margin: 0 3px 15px;
+}
 
-      transition: .2s;
-    }
+.polls-header h2 {
+  margin: 0;
+  font-size: 22px;
+}
 
-    input:focus {
-      border-color: #818cf8;
+.count {
+  padding: 6px 11px;
 
-      box-shadow:
-        0 0 0 4px
-        rgba(99,102,241,.12);
-    }
+  border-radius: 999px;
 
-    .label {
-      display: block;
-      margin: 10px 0 9px;
+  background: #e0e7ff;
+  color: #4338ca;
 
-      color: #374151;
+  font-size: 12px;
+  font-weight: bold;
+}
 
-      font-size: 13px;
-      font-weight: bold;
-    }
+.poll {
+  padding: 24px;
+  margin-bottom: 17px;
+}
 
-    .create-button {
-      width: 100%;
-      padding: 14px;
+.poll-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 
-      border: 0;
-      border-radius: 12px;
+  gap: 15px;
+}
 
-      background:
-        linear-gradient(
-          135deg,
-          #4f46e5,
-          #6366f1
-        );
+.question {
+  margin: 0;
 
-      color: white;
+  font-size: 21px;
+  line-height: 1.4;
 
-      font-weight: bold;
+  overflow-wrap: anywhere;
+}
 
-      cursor: pointer;
+.delete {
+  flex-shrink: 0;
 
-      transition: .2s;
-    }
+  padding: 8px 11px;
 
-    .create-button:hover {
-      transform: translateY(-1px);
-    }
+  border: 1px solid #fecaca;
+  border-radius: 9px;
 
-    .create-button:disabled {
-      opacity: .6;
-      cursor: wait;
-    }
+  background: white;
+  color: var(--danger);
 
-    /* MESSAGE */
+  font-size: 12px;
+  font-weight: bold;
 
-    #message {
-      margin-bottom: 15px;
-    }
+  cursor: pointer;
+}
 
-    .message {
-      padding: 14px 16px;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 600;
-    }
+.delete:hover {
+  background: #fef2f2;
+}
 
-    .message.success {
-      color: #166534;
-      background: #dcfce7;
-    }
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
 
-    .message.error {
-      color: #991b1b;
-      background: #fee2e2;
-    }
+  margin: 10px 0 20px;
+}
 
-    /* POLLS HEADER */
+.badge {
+  padding: 5px 8px;
 
-    .polls-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+  border-radius: 7px;
 
-      margin: 0 3px 15px;
-    }
+  background: #f3f4f6;
 
-    .polls-header h2 {
-      margin: 0;
-      font-size: 22px;
-    }
+  color: var(--muted);
 
-    .count {
-      padding: 6px 11px;
+  font-size: 12px;
+}
 
-      border-radius: 999px;
+.badge.voted {
+  background: #dcfce7;
+  color: #166534;
+}
 
-      background: #e0e7ff;
-      color: #4338ca;
+.option {
+  margin: 12px 0;
+}
 
-      font-size: 12px;
-      font-weight: bold;
-    }
+.vote {
+  position: relative;
+  overflow: hidden;
 
-    /* POLL */
+  width: 100%;
+  min-height: 52px;
 
-    .poll {
-      padding: 24px;
-      margin-bottom: 17px;
-    }
+  padding: 14px 15px;
 
-    .poll-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
+  border: 1px solid var(--border);
+  border-radius: 12px;
 
-      gap: 15px;
-    }
+  background: white;
 
-    .question {
-      margin: 0;
+  text-align: left;
 
-      font-size: 21px;
-      line-height: 1.4;
+  cursor: pointer;
 
-      overflow-wrap: anywhere;
-    }
+  transition: .2s;
+}
 
-    .delete {
-      flex-shrink: 0;
+.vote:hover:not(:disabled) {
+  border-color: #818cf8;
+  transform: translateY(-1px);
+}
 
-      padding: 8px 11px;
+.vote:disabled {
+  cursor: default;
+}
 
-      border: 1px solid #fecaca;
-      border-radius: 9px;
+.progress {
+  position: absolute;
+  inset: 0 auto 0 0;
 
-      background: white;
-      color: var(--danger);
+  width: 0;
 
-      font-size: 12px;
-      font-weight: bold;
+  background: #eef2ff;
 
-      cursor: pointer;
-    }
+  transition: width .5s;
+}
 
-    .delete:hover {
-      background: #fef2f2;
-    }
+.vote-content {
+  position: relative;
+  z-index: 2;
 
-    .meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
+  display: flex;
+  justify-content: space-between;
 
-      margin: 10px 0 20px;
-    }
+  gap: 10px;
 
-    .badge {
-      padding: 5px 8px;
+  font-weight: 600;
+}
 
-      border-radius: 7px;
+.option-text {
+  overflow-wrap: anywhere;
+}
 
-      background: #f3f4f6;
+.percent {
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
 
-      color: var(--muted);
+.option-info {
+  display: flex;
+  justify-content: space-between;
 
-      font-size: 12px;
-    }
+  padding: 5px 4px 0;
 
-    .badge.voted {
-      background: #dcfce7;
-      color: #166534;
-    }
+  color: var(--muted);
 
-    /* OPTIONS */
+  font-size: 12px;
+}
 
-    .option {
-      margin: 12px 0;
-    }
+.empty {
+  padding: 55px 20px;
+  text-align: center;
+}
 
-    .vote {
-      position: relative;
-      overflow: hidden;
+.empty-icon {
+  font-size: 45px;
+  margin-bottom: 10px;
+}
 
-      width: 100%;
-      min-height: 52px;
+.empty h3 {
+  margin: 0 0 7px;
+}
 
-      padding: 14px 15px;
+.empty p {
+  margin: 0;
+  color: var(--muted);
+}
 
-      border: 1px solid var(--border);
-      border-radius: 12px;
+.loading {
+  padding: 50px;
+  text-align: center;
+  color: var(--muted);
+}
 
-      background: white;
+.spinner {
+  width: 30px;
+  height: 30px;
 
-      text-align: left;
+  margin: 0 auto 12px;
 
-      cursor: pointer;
+  border: 3px solid #e5e7eb;
+  border-top-color: var(--primary);
 
-      transition: .2s;
-    }
+  border-radius: 50%;
 
-    .vote:hover:not(:disabled) {
-      border-color: #818cf8;
-      transform: translateY(-1px);
-    }
+  animation: spin .7s linear infinite;
+}
 
-    .vote:disabled {
-      cursor: default;
-    }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
-    .progress {
-      position: absolute;
-      inset: 0 auto 0 0;
+.modal {
+  position: fixed;
+  inset: 0;
 
-      width: 0;
+  z-index: 100;
 
-      background: #eef2ff;
+  display: none;
+  align-items: center;
+  justify-content: center;
 
-      transition: width .5s;
-    }
+  padding: 20px;
 
-    .vote-content {
-      position: relative;
-      z-index: 2;
+  background: rgba(15,23,42,.55);
 
-      display: flex;
-      justify-content: space-between;
+  backdrop-filter: blur(4px);
+}
 
-      gap: 10px;
+.modal.show {
+  display: flex;
+}
 
-      font-weight: 600;
-    }
+.modal-box {
+  width: min(420px,100%);
 
-    .option-text {
-      overflow-wrap: anywhere;
-    }
+  padding: 25px;
 
-    .percent {
-      flex-shrink: 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
+  border-radius: 20px;
 
-    .option-info {
-      display: flex;
-      justify-content: space-between;
+  background: white;
 
-      padding: 5px 4px 0;
+  box-shadow:
+    0 25px 70px
+    rgba(0,0,0,.25);
+}
 
-      color: var(--muted);
+.modal-box h3 {
+  margin: 0 0 8px;
+}
 
-      font-size: 12px;
-    }
+.modal-box p {
+  margin: 0;
 
-    /* EMPTY */
+  color: var(--muted);
+  line-height: 1.5;
+}
 
-    .empty {
-      padding: 55px 20px;
-      text-align: center;
-    }
+.modal-buttons {
+  display: flex;
+  gap: 10px;
 
-    .empty-icon {
-      font-size: 45px;
-      margin-bottom: 10px;
-    }
+  margin-top: 22px;
+}
 
-    .empty h3 {
-      margin: 0 0 7px;
-    }
+.modal-buttons button {
+  flex: 1;
 
-    .empty p {
-      margin: 0;
-      color: var(--muted);
-    }
+  padding: 12px;
 
-    /* LOADING */
+  border-radius: 10px;
 
-    .loading {
-      padding: 50px;
-      text-align: center;
-      color: var(--muted);
-    }
+  cursor: pointer;
+  font-weight: bold;
+}
 
-    .spinner {
-      width: 30px;
-      height: 30px;
+.cancel {
+  border: 1px solid var(--border);
+  background: white;
+}
 
-      margin: 0 auto 12px;
+.confirm {
+  border: 0;
+  background: var(--danger);
+  color: white;
+}
 
-      border: 3px solid #e5e7eb;
-      border-top-color: var(--primary);
+footer {
+  padding: 20px;
 
-      border-radius: 50%;
+  text-align: center;
 
-      animation: spin .7s linear infinite;
-    }
+  color: #9ca3af;
 
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
+  font-size: 12px;
+}
 
-    /* MODAL */
+@media(max-width:600px) {
 
-    .modal {
-      position: fixed;
-      inset: 0;
+  header {
+    padding: 40px 18px 75px;
+  }
 
-      z-index: 100;
+  main {
+    width: calc(100% - 20px);
+  }
 
-      display: none;
-      align-items: center;
-      justify-content: center;
+  .create,
+  .poll {
+    padding: 19px;
+  }
 
-      padding: 20px;
+  .poll-top {
+    flex-direction: column;
+  }
 
-      background:
-        rgba(15,23,42,.55);
+  .delete {
+    align-self: flex-end;
+  }
 
-      backdrop-filter: blur(4px);
-    }
+  .question {
+    font-size: 19px;
+  }
 
-    .modal.show {
-      display: flex;
-    }
+  .modal-buttons {
+    flex-direction: column-reverse;
+  }
 
-    .modal-box {
-      width: min(420px,100%);
+}
 
-      padding: 25px;
-
-      border-radius: 20px;
-
-      background: white;
-
-      box-shadow:
-        0 25px 70px
-        rgba(0,0,0,.25);
-    }
-
-    .modal-box h3 {
-      margin: 0 0 8px;
-    }
-
-    .modal-box p {
-      margin: 0;
-
-      color: var(--muted);
-
-      line-height: 1.5;
-    }
-
-    .modal-buttons {
-      display: flex;
-      gap: 10px;
-
-      margin-top: 22px;
-    }
-
-    .modal-buttons button {
-      flex: 1;
-
-      padding: 12px;
-
-      border-radius: 10px;
-
-      cursor: pointer;
-
-      font-weight: bold;
-    }
-
-    .cancel {
-      border: 1px solid var(--border);
-      background: white;
-    }
-
-    .confirm {
-      border: 0;
-      background: var(--danger);
-      color: white;
-    }
-
-    /* FOOTER */
-
-    footer {
-      padding: 20px;
-
-      text-align: center;
-
-      color: #9ca3af;
-
-      font-size: 12px;
-    }
-
-    /* MOBILE */
-
-    @media(max-width:600px) {
-
-      header {
-        padding: 40px 18px 75px;
-      }
-
-      main {
-        width: calc(100% - 20px);
-      }
-
-      .create,
-      .poll {
-        padding: 19px;
-      }
-
-      .poll-top {
-        flex-direction: column;
-      }
-
-      .delete {
-        align-self: flex-end;
-      }
-
-      .question {
-        font-size: 19px;
-      }
-
-      .modal-buttons {
-        flex-direction: column-reverse;
-      }
-
-    }
-
-  </style>
-
+</style>
 </head>
 
-
 <body>
-
 
 <header>
 
@@ -602,19 +563,14 @@
 
   <p>
     Twórz ankiety, głosuj i sprawdzaj
-    wyniki w czasie rzeczywistym.
+    rzeczywiste wyniki głosowania.
   </p>
 
 </header>
 
-
 <main>
 
-
   <div id="message"></div>
-
-
-  <!-- TWORZENIE -->
 
   <section class="card create">
 
@@ -636,18 +592,15 @@
 
     </div>
 
-
     <input
       id="question"
       maxlength="200"
       placeholder="Wpisz pytanie ankiety"
     >
 
-
     <span class="label">
       Odpowiedzi
     </span>
-
 
     <input
       id="option1"
@@ -673,7 +626,6 @@
       placeholder="Odpowiedź D — opcjonalnie"
     >
 
-
     <button
       id="createButton"
       class="create-button"
@@ -683,9 +635,6 @@
     </button>
 
   </section>
-
-
-  <!-- ANKIETY -->
 
   <div class="polls-header">
 
@@ -702,7 +651,6 @@
 
   </div>
 
-
   <div id="polls">
 
     <div class="card loading">
@@ -715,16 +663,11 @@
 
   </div>
 
-
 </main>
-
 
 <footer>
   Głosowanie
 </footer>
-
-
-<!-- MODAL USUWANIA -->
 
 <div
   id="deleteModal"
@@ -741,7 +684,6 @@
       Ankieta, odpowiedzi i głosy zostaną
       usunięte. Tej operacji nie można cofnąć.
     </p>
-
 
     <div class="modal-buttons">
 
@@ -766,13 +708,7 @@
 
 </div>
 
-
 <script>
-
-
-/* =====================================================
-   SUPABASE
-===================================================== */
 
 const SUPABASE_URL =
   "https://hvloevnsrbfmmrkohzxe.supabase.co";
@@ -780,25 +716,16 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
   "sb_publishable__iN5fmthHgtL_WfMM08sUw_7PCFKJgl";
 
-
 const supabaseClient =
   supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
   );
 
-
-/* =====================================================
-   IDENTYFIKATOR
-===================================================== */
-
 function getUserId() {
 
   let id =
-    localStorage.getItem(
-      "voter_id"
-    );
-
+    localStorage.getItem("voter_id");
 
   if (!id) {
 
@@ -812,18 +739,10 @@ function getUserId() {
 
   }
 
-
   return id;
 }
 
-
-const userId =
-  getUserId();
-
-
-/* =====================================================
-   MESSAGE
-===================================================== */
+const userId = getUserId();
 
 function showMessage(
   text,
@@ -831,53 +750,35 @@ function showMessage(
 ) {
 
   const box =
-    document.getElementById(
-      "message"
-    );
-
+    document.getElementById("message");
 
   box.innerHTML = "";
 
-
   const message =
-    document.createElement(
-      "div"
-    );
-
+    document.createElement("div");
 
   message.className =
     `message ${type}`;
 
-
   message.textContent =
     text;
 
-
-  box.appendChild(
-    message
-  );
-
+  box.appendChild(message);
 
   setTimeout(() => {
-
     box.innerHTML = "";
-
   }, 4500);
-
 }
 
 
-/* =====================================================
-   LOAD POLLS
-===================================================== */
-
+/*
+ * ŁADUJEMY ANKIETY ORAZ PRAWDZIWE GŁOSY
+ * Z TABELI votes.
+ */
 async function loadPolls() {
 
   const container =
-    document.getElementById(
-      "polls"
-    );
-
+    document.getElementById("polls");
 
   container.innerHTML = `
     <div class="card loading">
@@ -886,26 +787,14 @@ async function loadPolls() {
     </div>
   `;
 
-
   try {
-
-    /*
-     WAŻNE:
-
-     Nie pobieramy tutaj tabeli votes.
-
-     Dzięki temu RLS na votes nie może
-     zablokować całego ekranu.
-    */
 
     const {
       data: polls,
       error: pollsError
     } =
       await supabaseClient
-
         .from("polls")
-
         .select(`
           id,
           question,
@@ -913,11 +802,9 @@ async function loadPolls() {
           author_id,
           options (
             id,
-            text,
-            votes
+            text
           )
         `)
-
         .order(
           "created_at",
           {
@@ -925,48 +812,82 @@ async function loadPolls() {
           }
         );
 
-
     if (pollsError) {
-
       throw pollsError;
-
     }
 
 
     /*
-     Osobne RPC do informacji,
-     gdzie aktualny użytkownik już głosował.
-    */
-
+     * Pobieramy wszystkie głosy.
+     *
+     * NIE używamy już options.votes.
+     * Dzięki temu liczby są liczone
+     * bezpośrednio z faktycznych rekordów votes.
+     */
     const {
-      data: votedRows,
-      error: votedError
+      data: votes,
+      error: votesError
     } =
       await supabaseClient
+        .from("votes")
+        .select(`
+          poll_id,
+          option_id,
+          user_id
+        `);
 
-        .rpc(
-          "get_voted_polls",
-          {
-            p_user_id:
-              userId
-          }
-        );
-
-
-    if (votedError) {
-
-      throw votedError;
-
+    if (votesError) {
+      throw votesError;
     }
 
 
+    /*
+     * Grupujemy głosy według ankiety
+     * i odpowiedzi.
+     */
+    const voteMap =
+      new Map();
+
     const votedPolls =
-      new Set(
-        (votedRows || [])
-          .map(row =>
-            Number(row.poll_id)
-          )
-      );
+      new Set();
+
+    (votes || []).forEach(
+      vote => {
+
+        const pollId =
+          String(vote.poll_id);
+
+        const optionId =
+          String(vote.option_id);
+
+        if (!voteMap.has(pollId)) {
+          voteMap.set(
+            pollId,
+            new Map()
+          );
+        }
+
+        const pollVotes =
+          voteMap.get(pollId);
+
+        pollVotes.set(
+          optionId,
+          (pollVotes.get(optionId) || 0) + 1
+        );
+
+        if (
+          String(vote.user_id) ===
+          String(userId)
+        ) {
+
+          votedPolls.add(
+            pollId
+          );
+
+        }
+
+      }
+    );
 
 
     document.getElementById(
@@ -996,7 +917,6 @@ async function loadPolls() {
       `;
 
       return;
-
     }
 
 
@@ -1008,23 +928,23 @@ async function loadPolls() {
 
         renderPoll(
           poll,
+          voteMap.get(
+            String(poll.id)
+          ) || new Map(),
           votedPolls.has(
-            Number(poll.id)
+            String(poll.id)
           )
         );
 
       }
     );
 
-  }
-
-  catch (error) {
+  } catch (error) {
 
     console.error(
       "LOAD POLLS ERROR:",
       error
     );
-
 
     container.innerHTML = `
       <div class="card empty">
@@ -1050,123 +970,109 @@ async function loadPolls() {
   }
 
 }
-
+  <script>
 
 /* =====================================================
-   RENDER POLL
+   RENDER ANKIETY
 ===================================================== */
 
 function renderPoll(
   poll,
+  pollVotes,
   hasVoted
 ) {
 
   const container =
-    document.getElementById(
-      "polls"
-    );
-
+    document.getElementById("polls");
 
   const card =
-    document.createElement(
-      "article"
-    );
-
+    document.createElement("article");
 
   card.className =
     "card poll";
 
 
   const top =
-    document.createElement(
-      "div"
-    );
-
+    document.createElement("div");
 
   top.className =
     "poll-top";
 
 
   const question =
-    document.createElement(
-      "h2"
-    );
-
+    document.createElement("h2");
 
   question.className =
     "question";
 
-
   question.textContent =
     poll.question;
 
-
-  top.appendChild(
-    question
-  );
+  top.appendChild(question);
 
 
   /*
-   Tylko autor dostaje
-   przycisk usuwania.
-  */
+   * Autor może usunąć swoją ankietę.
+   */
 
   if (
-    poll.author_id === userId
+    String(poll.author_id) ===
+    String(userId)
   ) {
 
     const deleteButton =
-      document.createElement(
-        "button"
-      );
-
+      document.createElement("button");
 
     deleteButton.className =
       "delete";
 
-
     deleteButton.textContent =
       "🗑️ Usuń";
-
 
     deleteButton.onclick =
       () => openDeleteModal(
         poll.id
       );
 
-
     top.appendChild(
       deleteButton
     );
-
   }
 
 
-  card.appendChild(
-    top
-  );
+  card.appendChild(top);
 
-
-  /* META */
 
   const options =
     poll.options || [];
 
 
-  const totalVotes =
-    options.reduce(
-      (sum, option) =>
-        sum +
-        Number(option.votes || 0),
-      0
-    );
+  /*
+   * LICZBA GŁOSÓW JEST LICZONA
+   * WYŁĄCZNIE Z TABELI votes.
+   */
 
+  let totalVotes = 0;
+
+
+  options.forEach(
+    option => {
+
+      totalVotes +=
+        Number(
+          pollVotes.get(
+            String(option.id)
+          ) || 0
+        );
+
+    }
+  );
+
+
+  /* META */
 
   const meta =
-    document.createElement(
-      "div"
-    );
-
+    document.createElement("div");
 
   meta.className =
     "meta";
@@ -1181,18 +1087,13 @@ function renderPoll(
 
 
   const dateBadge =
-    document.createElement(
-      "span"
-    );
-
+    document.createElement("span");
 
   dateBadge.className =
     "badge";
 
-
   dateBadge.textContent =
     `📅 ${date}`;
-
 
   meta.appendChild(
     dateBadge
@@ -1200,14 +1101,10 @@ function renderPoll(
 
 
   const voteBadge =
-    document.createElement(
-      "span"
-    );
-
+    document.createElement("span");
 
   voteBadge.className =
     "badge";
-
 
   voteBadge.textContent =
     `🗳️ ${totalVotes} ${
@@ -1219,7 +1116,6 @@ function renderPoll(
       )
     }`;
 
-
   meta.appendChild(
     voteBadge
   );
@@ -1228,18 +1124,13 @@ function renderPoll(
   if (hasVoted) {
 
     const votedBadge =
-      document.createElement(
-        "span"
-      );
-
+      document.createElement("span");
 
     votedBadge.className =
       "badge voted";
 
-
     votedBadge.textContent =
       "✓ Zagłosowano";
-
 
     meta.appendChild(
       votedBadge
@@ -1248,126 +1139,97 @@ function renderPoll(
   }
 
 
-  card.appendChild(
-    meta
-  );
+  card.appendChild(meta);
 
 
-  /* OPTIONS */
+  /* ODPOWIEDZI */
 
   options.forEach(
     (option, index) => {
 
       const row =
-        document.createElement(
-          "div"
-        );
-
+        document.createElement("div");
 
       row.className =
         "option";
 
 
-      const button =
-        document.createElement(
-          "button"
+      const optionVotes =
+        Number(
+          pollVotes.get(
+            String(option.id)
+          ) || 0
         );
 
 
+      /*
+       * Procent liczymy z dokładnych
+       * wartości z tabeli votes.
+       */
+
+      const percentage =
+        totalVotes === 0
+          ? 0
+          : Math.round(
+              (
+                optionVotes /
+                totalVotes
+              ) * 100
+            );
+
+
+      const button =
+        document.createElement("button");
+
       button.className =
         "vote";
-
 
       button.disabled =
         hasVoted;
 
 
-      const optionVotes =
-        Number(
-          option.votes || 0
-        );
-
-
-      const percentage =
-        totalVotes > 0
-          ? Math.round(
-              optionVotes /
-              totalVotes *
-              100
-            )
-          : 0;
-
-
       const progress =
-        document.createElement(
-          "div"
-        );
-
+        document.createElement("div");
 
       progress.className =
         "progress";
-
 
       progress.style.width =
         `${percentage}%`;
 
 
       const content =
-        document.createElement(
-          "div"
-        );
-
+        document.createElement("div");
 
       content.className =
         "vote-content";
 
 
       const text =
-        document.createElement(
-          "span"
-        );
-
+        document.createElement("span");
 
       text.className =
         "option-text";
-
 
       text.textContent =
         option.text;
 
 
       const percent =
-        document.createElement(
-          "span"
-        );
-
+        document.createElement("span");
 
       percent.className =
         "percent";
-
 
       percent.textContent =
         `${percentage}%`;
 
 
-      content.appendChild(
-        text
-      );
+      content.appendChild(text);
+      content.appendChild(percent);
 
-
-      content.appendChild(
-        percent
-      );
-
-
-      button.appendChild(
-        progress
-      );
-
-
-      button.appendChild(
-        content
-      );
+      button.appendChild(progress);
+      button.appendChild(content);
 
 
       if (!hasVoted) {
@@ -1381,60 +1243,61 @@ function renderPoll(
       }
 
 
-      row.appendChild(
-        button
-      );
+      row.appendChild(button);
 
 
       const info =
-        document.createElement(
-          "div"
-        );
-
+        document.createElement("div");
 
       info.className =
         "option-info";
 
 
-      info.innerHTML = `
-        <span>
-          ${optionVotes}
-          ${pluralize(
+      const votesText =
+        document.createElement("span");
+
+      votesText.textContent =
+        `${optionVotes} ${
+          pluralize(
             optionVotes,
             "głos",
             "głosy",
             "głosów"
-          )}
-        </span>
-
-        <span>
-          Odpowiedź ${index + 1}
-        </span>
-      `;
+          )
+        }`;
 
 
-      row.appendChild(
-        info
+      const answerText =
+        document.createElement("span");
+
+      answerText.textContent =
+        `Odpowiedź ${index + 1}`;
+
+
+      info.appendChild(
+        votesText
+      );
+
+      info.appendChild(
+        answerText
       );
 
 
-      card.appendChild(
-        row
-      );
+      row.appendChild(info);
+
+      card.appendChild(row);
 
     }
   );
 
 
-  container.appendChild(
-    card
-  );
+  container.appendChild(card);
 
 }
 
 
 /* =====================================================
-   CREATE POLL
+   TWORZENIE ANKIETY
 ===================================================== */
 
 async function createPoll() {
@@ -1484,7 +1347,6 @@ async function createPoll() {
     );
 
     return;
-
   }
 
 
@@ -1495,94 +1357,99 @@ async function createPoll() {
     );
 
     return;
-
   }
 
 
   button.disabled =
     true;
 
+  button.textContent =
+    "Tworzenie...";
 
-    button.textContent = "Tworzenie...";
 
   try {
 
-    /*
-     * Tworzymy ankietę.
-     * author_id zapisujemy jako identyfikator
-     * przeglądarki użytkownika.
-     */
     const {
       data: poll,
       error: pollError
-    } = await supabaseClient
-      .from("polls")
-      .insert({
-        question: question,
-        author_id: userId
-      })
-      .select()
-      .single();
+    } =
+      await supabaseClient
+        .from("polls")
+        .insert({
+          question: question,
+          author_id: userId
+        })
+        .select()
+        .single();
+
 
     if (pollError) {
       throw pollError;
     }
 
-    /*
-     * Tworzymy odpowiedzi.
-     */
-    const optionRows = options.map(text => ({
-      poll_id: poll.id,
-      text: text,
-      votes: 0
-    }));
+
+    const optionRows =
+      options.map(
+        text => ({
+          poll_id: poll.id,
+          text: text
+        })
+      );
+
 
     const {
       error: optionError
-    } = await supabaseClient
-      .from("options")
-      .insert(optionRows);
+    } =
+      await supabaseClient
+        .from("options")
+        .insert(
+          optionRows
+        );
+
 
     if (optionError) {
 
-      /*
-       * Jeśli dodanie odpowiedzi się nie udało,
-       * próbujemy usunąć utworzoną ankietę.
-       */
       await supabaseClient
         .from("polls")
         .delete()
-        .eq("id", poll.id);
+        .eq(
+          "id",
+          poll.id
+        );
 
       throw optionError;
     }
 
-    /*
-     * Czyścimy formularz.
-     */
-    document.getElementById("question").value = "";
-    document.getElementById("option1").value = "";
-    document.getElementById("option2").value = "";
-    document.getElementById("option3").value = "";
-    document.getElementById("option4").value = "";
+
+    document.getElementById(
+      "question"
+    ).value = "";
+
+    document.getElementById(
+      "option1"
+    ).value = "";
+
+    document.getElementById(
+      "option2"
+    ).value = "";
+
+    document.getElementById(
+      "option3"
+    ).value = "";
+
+    document.getElementById(
+      "option4"
+    ).value = "";
+
 
     showMessage(
       "Ankieta została utworzona!",
       "success"
     );
 
-    /*
-     * Odświeżamy listę ankiet.
-     */
+
     await loadPolls();
 
-    /*
-     * Przewijamy stronę do listy ankiet.
-     */
-    document.getElementById("polls").scrollIntoView({
-      behavior: "smooth",
-      block: "start"
-    });
 
   } catch (error) {
 
@@ -1598,8 +1465,11 @@ async function createPoll() {
 
   } finally {
 
-    button.disabled = false;
-    button.textContent = "＋ Utwórz ankietę";
+    button.disabled =
+      false;
+
+    button.textContent =
+      "＋ Utwórz ankietę";
 
   }
 
@@ -1607,7 +1477,7 @@ async function createPoll() {
 
 
 /* =====================================================
-   VOTE
+   GŁOSOWANIE
 ===================================================== */
 
 async function vote(
@@ -1621,23 +1491,25 @@ async function vote(
      * Najpierw zapisujemy głos.
      *
      * UNIQUE(poll_id, user_id)
-     * w tabeli votes powinien zabezpieczać
-     * przed wielokrotnym głosowaniem.
+     * zabezpiecza przed drugim głosem.
      */
-    const {
-      error: voteError
-    } = await supabaseClient
-      .from("votes")
-      .insert({
-        poll_id: pollId,
-        option_id: optionId,
-        user_id: userId
-      });
 
-    if (voteError) {
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("votes")
+        .insert({
+          poll_id: pollId,
+          option_id: optionId,
+          user_id: userId
+        });
+
+
+    if (error) {
 
       if (
-        voteError.code === "23505"
+        error.code === "23505"
       ) {
 
         showMessage(
@@ -1649,42 +1521,7 @@ async function vote(
         return;
       }
 
-      throw voteError;
-    }
-
-
-    /*
-     * Pobieramy aktualną liczbę głosów.
-     */
-    const {
-      data: option,
-      error: optionError
-    } = await supabaseClient
-      .from("options")
-      .select("votes")
-      .eq("id", optionId)
-      .single();
-
-    if (optionError) {
-      throw optionError;
-    }
-
-
-    /*
-     * Zwiększamy liczbę głosów.
-     */
-    const {
-      error: updateError
-    } = await supabaseClient
-      .from("options")
-      .update({
-        votes:
-          Number(option.votes || 0) + 1
-      })
-      .eq("id", optionId);
-
-    if (updateError) {
-      throw updateError;
+      throw error;
     }
 
 
@@ -1693,6 +1530,15 @@ async function vote(
       "success"
     );
 
+
+    /*
+     * Nie zwiększamy już ręcznie
+     * options.votes.
+     *
+     * Po głosowaniu loadPolls()
+     * pobierze rzeczywiste rekordy
+     * z tabeli votes.
+     */
 
     await loadPolls();
 
@@ -1714,7 +1560,7 @@ async function vote(
 
 
 /* =====================================================
-   DELETE MODAL
+   USUWANIE
 ===================================================== */
 
 let pollToDelete = null;
@@ -1727,9 +1573,10 @@ function openDeleteModal(
   pollToDelete =
     pollId;
 
-
   document
-    .getElementById("deleteModal")
+    .getElementById(
+      "deleteModal"
+    )
     .classList.add("show");
 
 }
@@ -1740,17 +1587,14 @@ function closeDeleteModal() {
   pollToDelete =
     null;
 
-
   document
-    .getElementById("deleteModal")
+    .getElementById(
+      "deleteModal"
+    )
     .classList.remove("show");
 
 }
 
-
-/* =====================================================
-   DELETE POLL
-===================================================== */
 
 async function deletePoll() {
 
@@ -1774,26 +1618,26 @@ async function deletePoll() {
   button.disabled =
     true;
 
-
   button.textContent =
     "Usuwanie...";
 
 
   try {
 
-    /*
-     * RLS w Supabase powinien pozwalać
-     * na DELETE tylko wtedy, gdy:
-     *
-     * author_id = aktualny userId
-     */
     const {
       error
-    } = await supabaseClient
-      .from("polls")
-      .delete()
-      .eq("id", id)
-      .eq("author_id", userId);
+    } =
+      await supabaseClient
+        .from("polls")
+        .delete()
+        .eq(
+          "id",
+          id
+        )
+        .eq(
+          "author_id",
+          userId
+        );
 
 
     if (error) {
@@ -1812,10 +1656,11 @@ async function deletePoll() {
 
     await loadPolls();
 
+
   } catch (error) {
 
     console.error(
-      "DELETE POLL ERROR:",
+      "DELETE ERROR:",
       error
     );
 
@@ -1838,12 +1683,10 @@ async function deletePoll() {
 
 
 /* =====================================================
-   ESCAPE HTML
+   POMOCNICZE
 ===================================================== */
 
-function escapeHtml(
-  text
-) {
+function escapeHtml(text) {
 
   const div =
     document.createElement(
@@ -1857,10 +1700,6 @@ function escapeHtml(
 
 }
 
-
-/* =====================================================
-   LICZBA GŁOSÓW
-===================================================== */
 
 function pluralize(
   number,
@@ -1882,7 +1721,6 @@ function pluralize(
 
   const lastTwo =
     number % 100;
-
 
   const last =
     number % 10;
@@ -1908,7 +1746,7 @@ function pluralize(
 
 
 /* =====================================================
-   MODAL — KLIKNIĘCIE W TŁO
+   MODAL
 ===================================================== */
 
 document
@@ -1928,10 +1766,6 @@ document
     }
   );
 
-
-/* =====================================================
-   ESC — ZAMKNIĘCIE MODALA
-===================================================== */
 
 document.addEventListener(
   "keydown",
