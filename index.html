@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#fff8ee" />
+<title>🍳 Książka Kucharska</title>
+<style>
+  /* ============ RESET / BASE ============ */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #fff8ee;
+    color: #2b2017;
+    min-height: 100vh;
+    min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+  input, textarea, select { font-family: inherit; font-size: 16px; }
+  a { color: #e67e22; text-decoration: none; }
+  :root {
+    --bg: #fff8ee;
+    --card: #ffffff;
+    --primary: #e67e22;
+    --primary-dark: #d35400;
+    --accent: #f6c177;
+    --text: #2b2017;
+    --muted: #8a7a6a;
+    --border: #f0e4d3;
+    --green: #4caf50;
+    --yellow: #f1c40f;
+    --red: #e74c3c;
+    --shadow: 0 6px 20px rgba(214, 160, 93, .12);
+  }
+
+  /* ============ HEADER ============ */
+  .app-header {
+    position: sticky; top: 0; z-index: 50;
+    background: linear-gradient(180deg, #fff8ee 70%, rgba(255,248,238,0.9));
+    padding: calc(16px + env(safe-area-inset-top)) 20px 10px;
+    text-align: center;
+  }
+  .app-header h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -.3px; }
+  .app-header p  { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+  .auth-corner {
+    position: absolute; right: 16px; top: calc(16px + env(safe-area-inset-top));
+    background: #fff; border-radius: 999px; padding: 8px 14px; font-size: 13px;
+    font-weight: 600; box-shadow: var(--shadow); border: 1px solid var(--border);
+  }
+
+  /* ============ CONTAINER ============ */
+  .container { padding: 10px 16px 24px; max-width: 640px; margin: 0 auto; }
+
+  /* ============ CARDS ============ */
+  .card {
+    background: var(--card); border-radius: 20px; padding: 18px;
+    box-shadow: var(--shadow); border: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .card h2 { margin: 0 0 10px; font-size: 18px; font-weight: 800; }
+  .card .subtle { font-size: 13px; color: var(--muted); }
+
+  /* ============ INPUTS / CHIPS ============ */
+  .input-row { display: flex; gap: 8px; margin-top: 8px; }
+  .input-row input, .input-row select {
+    flex: 1; min-width: 0; padding: 14px 16px; border-radius: 14px;
+    border: 1.5px solid var(--border); background: #fff8ee; outline: none; transition: border .15s;
+  }
+  .input-row input:focus, .input-row select:focus { border-color: var(--primary); background: #fff; }
+  .btn {
+    padding: 14px 18px; border-radius: 14px; background: var(--primary); color: #fff;
+    font-weight: 700; font-size: 15px; transition: transform .1s, background .15s;
+    min-height: 48px;
+  }
+  .btn:active { transform: scale(.97); }
+  .btn:hover { background: var(--primary-dark); }
+  .btn-ghost { background: #fff; color: var(--text); border: 1.5px solid var(--border); }
+  .btn-ghost:hover { background: #fff8ee; }
+  .btn-full { width: 100%; }
+  .btn-wide { padding: 16px; font-size: 16px; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; min-height: 10px; }
+  .chip {
+    background: #fff3dc; color: #7a4a1a; padding: 8px 10px 8px 14px;
+    border-radius: 999px; font-size: 14px; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 8px; border: 1px solid #f6d9a4;
+  }
+  .chip button {
+    background: #fff; color: #c0392b; width: 22px; height: 22px; border-radius: 999px;
+    font-size: 14px; line-height: 1; display: flex; align-items: center; justify-content: center;
+  }
+  .chip-empty { color: var(--muted); font-size: 13px; padding: 4px 0; }
+
+  /* ============ RECIPE CARDS ============ */
+  .filters { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 8px; margin: 0 -16px 10px; padding-left: 16px; padding-right: 16px; }
+  .filters::-webkit-scrollbar { display: none; }
+  .filter-chip {
+    flex-shrink: 0; padding: 10px 14px; border-radius: 999px;
+    background: #fff; border: 1.5px solid var(--border);
+    font-size: 13px; font-weight: 600; color: var(--text);
+  }
+  .filter-chip.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+  .recipe-card {
+    background: var(--card); border-radius: 20px; padding: 16px;
+    box-shadow: var(--shadow); border: 1px solid var(--border);
+    margin-bottom: 14px; display: flex; gap: 14px; align-items: flex-start;
+    transition: transform .1s;
+  }
+  .recipe-card:active { transform: scale(.98); }
+  .recipe-emoji {
+    font-size: 44px; width: 68px; height: 68px; display: flex; align-items: center; justify-content: center;
+    background: #fff3dc; border-radius: 18px; flex-shrink: 0;
+  }
+  .recipe-body { flex: 1; min-width: 0; }
+  .recipe-body h3 { margin: 0 0 4px; font-size: 16px; font-weight: 800; line-height: 1.2; }
+  .recipe-body p { margin: 0 0 8px; font-size: 13px; color: var(--muted); line-height: 1.4;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .recipe-meta { display: flex; gap: 10px; font-size: 12px; color: var(--muted); flex-wrap: wrap; }
+  .match-bar { margin-top: 10px; display: flex; align-items: center; gap: 8px; }
+  .match-badge {
+    padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700;
+    background: #e9f7ea; color: #2e7d32;
+  }
+  .match-badge.yellow { background: #fff6cc; color: #8b7500; }
+  .match-badge.gray   { background: #eee; color: #666; }
+  .missing { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+  /* ============ MODAL ============ */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(20,10,0,0.45);
+    z-index: 100; display: flex; align-items: flex-end; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .2s;
+  }
+  .modal-backdrop.open { opacity: 1; pointer-events: auto; }
+  .modal {
+    background: #fff8ee; width: 100%; max-width: 640px; max-height: 92vh;
+    border-radius: 24px 24px 0 0; overflow-y: auto; transform: translateY(100%);
+    transition: transform .25s cubic-bezier(.2,.9,.3,1);
+    padding: 20px 20px calc(32px + env(safe-area-inset-bottom));
+    box-shadow: 0 -10px 40px rgba(0,0,0,.2);
+  }
+  .modal-backdrop.open .modal { transform: translateY(0); }
+  .modal-grip {
+    width: 44px; height: 4px; background: #e0d0b8; border-radius: 999px;
+    margin: 0 auto 14px;
+  }
+  .modal h2 { margin: 0 0 6px; font-size: 24px; font-weight: 800; }
+  .modal .close-btn {
+    position: absolute; right: 20px; top: 20px; width: 36px; height: 36px; border-radius: 999px;
+    background: #fff; box-shadow: var(--shadow); font-size: 20px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .ingredient-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 12px; background: #fff; border-radius: 12px; margin-bottom: 6px;
+    border: 1px solid var(--border);
+  }
+  .ingredient-item.have { border-color: #c8e6c9; background: #f1f8f1; }
+  .ingredient-item.miss { border-color: #ffcdd2; background: #fdf0f0; }
+  .ingredient-item .name { font-weight: 600; }
+  .ingredient-item .amount { font-size: 13px; color: var(--muted); }
+
+  /* ============ BOTTOM NAV ============ */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 90;
+    background: rgba(255,255,255,0.92); backdrop-filter: blur(14px);
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-around;
+    padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+  }
+  .nav-btn {
+    flex: 1; padding: 8px 4px; display: flex; flex-direction: column; align-items: center;
+    gap: 2px; font-size: 11px; font-weight: 600; color: var(--muted); border-radius: 12px;
+    min-height: 56px; justify-content: center;
+  }
+  .nav-btn .ic { font-size: 22px; }
+  .nav-btn.active { color: var(--primary); }
+
+  /* ============ TOAST ============ */
+  #toast-container { position: fixed; bottom: calc(90px + env(safe-area-inset-bottom)); left: 0; right: 0; z-index: 200; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
+  .toast {
+    background: #2b2017; color: #fff; padding: 12px 18px; border-radius: 999px;
+    font-size: 14px; font-weight: 600; box-shadow: var(--shadow);
+    animation: toastIn .25s ease-out;
+  }
+  @keyframes toastIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  /* ============ MISC ============ */
+  .loading { text-align: center; padding: 30px; color: var(--muted); }
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); }
+  .empty-state .big { font-size: 48px; margin-bottom: 8px; }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .shortcut-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+  .shortcut {
+    padding: 16px 12px; border-radius: 16px; text-align: center;
+    background: linear-gradient(135deg, #fff6e0, #ffe9c2); border: 1.5px solid #f6d9a4;
+    font-weight: 700; font-size: 14px; color: #7a4a1a;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+  .shortcut .big { font-size: 24px; }
+  .shortcut.danger { background: linear-gradient(135deg, #ffe3db, #ffc5b2); border-color: #ffb199; color: #8b2a0e; }
+  .shortcut.lucky  { background: linear-gradient(135deg, #e0f1ff, #c2e3ff); border-color: #99cfff; color: #0e4a8b; }
+
+  .shake { animation: shake .4s; }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px) rotate(-2deg); } 75% { transform: translateX(6px) rotate(2deg); } }
+
+  textarea { width: 100%; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--border); background: #fff8ee; outline: none; min-height: 90px; resize: vertical; }
+  textarea:focus { border-color: var(--primary); background: #fff; }
+
+  .form-group { margin-bottom: 12px; }
+  .form-group label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--text); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .fav-heart {
+    position: absolute; right: 16px; top: 16px; width: 40px; height: 40px;
+    background: #fff; border-radius: 999px; box-shadow: var(--shadow);
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+  }
+  .fav-heart.active { background: #ffe4e1; }
+
+  .shopping-item {
+    display: flex; align-items: center; gap: 12px; padding: 12px;
+    background: #fff; border-radius: 12px; margin-bottom: 6px; border: 1px solid var(--border);
+  }
+  .shopping-item.bought .name { text-decoration: line-through; color: var(--muted); }
+  .shopping-item input[type=checkbox] { width: 22px; height: 22px; accent-color: var(--primary); }
+  .shopping-item .name { flex: 1; font-weight: 600; }
+  .shopping-item .del { color: var(--red); font-size: 20px; padding: 4px 8px; }
+</style>
+</head>
+<body>
+
+<!-- ================ HEADER ================ -->
+<header class="app-header">
+  <h1>🍳 Książka Kucharska</h1>
+  <p>Co masz w lodówce? Znajdziemy coś pysznego.</p>
+  <button class="auth-corner" id="authBtn" onclick="openAuth()">Zaloguj</button>
+</header>
+
+<!-- ================ PAGES ================ -->
+<main class="container">
+
+  <!-- ------------ HOME ------------ -->
+  <section class="page active" id="page-home">
+    <div class="card">
+      <h2>🥦 Co masz w domu?</h2>
+      <div class="input-row">
+        <input id="ingredientInput" type="text" placeholder="Wpisz składnik, np. jajka" onkeydown="if(event.key==='Enter')addIngredient()" />
+        <button class="btn" onclick="addIngredient()">Dodaj</button>
+      </div>
+      <div class="chips" id="chipsBox"><div class="chip-empty">Dodaj składniki, które masz w lodówce 👆</div></div>
+      <div style="margin-top:16px; display:flex; gap:8px;">
+        <button class="btn btn-full btn-wide" onclick="findRecipes()">🔎 Znajdź przepisy</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>⚡ Szybkie akcje</h2>
+      <div class="shortcut-grid">
+        <button class="shortcut danger" onclick="rescueFridge()">
+          <span class="big">🚨</span><span>URATUJ MOJĄ LODÓWKĘ</span>
+        </button>
+        <button class="shortcut lucky" onclick="surpriseMe()">
+          <span class="big">🎲</span><span>ZASKOCZ MNIE</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="card" id="homeResults" style="display:none;">
+      <h2>🍽️ Pasujące przepisy</h2>
+      <div id="homeResultsList"></div>
+    </div>
+  </section>
+
+  <!-- ------------ RECIPES ------------ -->
+  <section class="page" id="page-recipes">
+    <div class="card">
+      <h2>🔎 Wyszukaj przepis</h2>
+      <div class="input-row">
+        <input id="searchInput" type="text" placeholder="Nazwa lub składnik..." oninput="renderRecipes()" />
+      </div>
+      <div class="filters" id="filtersBar"></div>
+    </div>
+    <div id="recipesList"></div>
+  </section>
+
+  <!-- ------------ ADD ------------ -->
+  <section class="page" id="page-add">
+    <div class="card">
+      <h2>➕ Dodaj przepis</h2>
+      <p class="subtle">Zaloguj się, aby zapisać swój własny przepis.</p>
+
+      <div class="form-group"><label>Nazwa</label>
+        <div class="input-row"><input id="rName" placeholder="np. Pierogi ruskie" /></div>
+      </div>
+      <div class="form-group"><label>Opis</label>
+        <textarea id="rDesc" placeholder="Krótki opis..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Emoji</label>
+          <div class="input-row"><input id="rEmoji" value="🍽️" /></div>
+        </div>
+        <div class="form-group"><label>Czas (min)</label>
+          <div class="input-row"><input id="rTime" type="number" value="30" /></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Trudność</label>
+          <div class="input-row"><select id="rDiff"><option>Łatwe</option><option>Średnie</option><option>Trudne</option></select></div>
+        </div>
+        <div class="form-group"><label>Porcje</label>
+          <div class="input-row"><input id="rServ" type="number" value="2" /></div>
+        </div>
+      </div>
+
+      <div class="form-group"><label>Składniki</label>
+        <div class="input-row">
+          <input id="iName" placeholder="np. jajka" />
+          <input id="iAmt" placeholder="2" style="max-width:80px;" />
+          <input id="iUnit" placeholder="szt." style="max-width:90px;" />
+          <button class="btn" onclick="addIngToForm()">+</button>
+        </div>
+        <div id="formIngs" style="margin-top:10px;"></div>
+      </div>
+
+      <div class="form-group"><label>Instrukcja przygotowania</label>
+        <textarea id="rInst" placeholder="1. Podgrzej patelnię..." style="min-height:140px;"></textarea>
+      </div>
+
+      <button class="btn btn-full btn-wide" onclick="publishRecipe()">📤 Opublikuj przepis</button>
+    </div>
+  </section>
+
+  <!-- ------------ FAVORITES ------------ -->
+  <section class="page" id="page-favs">
+    <div class="card">
+      <h2>❤️ Moje ulubione</h2>
+      <div id="favsList"></div>
+    </div>
+  </section>
+
+  <!-- ------------ SHOPPING ------------ -->
+  <section class="page" id="page-shop">
+    <div class="card">
+      <h2>🛒 Lista zakupów</h2>
+      <div class="input-row">
+        <input id="shopInput" placeholder="Dodaj produkt..." onkeydown="if(event.key==='Enter')addShopItem()" />
+        <button class="btn" onclick="addShopItem()">Dodaj</button>
+      </div>
+      <div id="shopList" style="margin-top:14px;"></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ================ BOTTOM NAV ================ -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" data-page="home"    onclick="switchPage('home')"><span class="ic">🏠</span>Start</button>
+  <button class="nav-btn"        data-page="recipes" onclick="switchPage('recipes')"><span class="ic">🔎</span>Przepisy</button>
+  <button class="nav-btn"        data-page="add"     onclick="switchPage('add')"><span class="ic">➕</span>Dodaj</button>
+  <button class="nav-btn"        data-page="favs"    onclick="switchPage('favs')"><span class="ic">❤️</span>Ulubione</button>
+  <button class="nav-btn"        data-page="shop"    onclick="switchPage('shop')"><span class="ic">🛒</span>Zakupy</button>
+</nav>
+
+<!-- ================ MODALS ================ -->
+<div class="modal-backdrop" id="recipeModal" onclick="if(event.target===this)closeRecipeModal()">
+  <div class="modal" id="recipeModalContent"></div>
+</div>
+
+<div class="modal-backdrop" id="authModal" onclick="if(event.target===this)closeAuth()">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-grip"></div>
+    <h2 id="authTitle">Zaloguj się</h2>
+    <p class="subtle" id="authSubtitle">Zaloguj się, aby zapisywać ulubione i własne przepisy.</p>
+    <div class="form-group" style="margin-top:16px;"><label>E-mail</label>
+      <div class="input-row"><input id="authEmail" type="email" placeholder="ty@example.com" /></div>
+    </div>
+    <div class="form-group"><label>Hasło</label>
+      <div class="input-row"><input id="authPass" type="password" placeholder="min 6 znaków" /></div>
+    </div>
+    <button class="btn btn-full btn-wide" id="authSubmit" onclick="authSubmit()">Zaloguj się</button>
+    <button class="btn btn-ghost btn-full" style="margin-top:8px;" id="authToggle" onclick="toggleAuthMode()">Nie mam konta — zarejestruj mnie</button>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<!-- ================ SCRIPTS ================ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ============================================================
+   🔧 KONFIGURACJA SUPABASE — WKLEJ TUTAJ SWOJE DANE
+   Panel Supabase → Project Settings → Data API
+   ============================================================ */
+const SUPABASE_URL      = "TU_WKLEJ_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "TU_WKLEJ_SUPABASE_ANON_KEY";
+
+/* ============================================================ */
+
+const sb = (SUPABASE_URL && !SUPABASE_URL.includes("TU_WKLEJ"))
+  ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  : null;
+
+// ---------- STATE ----------
+const state = {
+  user: null,
+  myIngredients: JSON.parse(localStorage.getItem("myIng") || "[]"),
+  recipes: [],
+  ingredients: {}, // recipeId -> [{name, amount, unit}]
+  favorites: new Set(),
+  shopping: [],
+  filter: "all",
+  authMode: "login", // or "signup"
+  formIngs: [],
+  activeRecipe: null,
+};
+
+// ---------- HELPERS ----------
+function toast(msg, type) {
+  const c = document.getElementById("toast-container");
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.textContent = msg;
+  if (type === "err") t.style.background = "#c0392b";
+  if (type === "ok")  t.style.background = "#2e7d32";
+  c.appendChild(t);
+  setTimeout(() => t.remove(), 2600);
+}
+function normalize(s){ return (s||"").toLowerCase().trim().replace(/[.,!?]/g,""); }
+function saveIng(){ localStorage.setItem("myIng", JSON.stringify(state.myIngredients)); }
+
+// ---------- NAV ----------
+function switchPage(name) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById("page-" + name).classList.add("active");
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.page === name));
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  if (name === "recipes") renderRecipes();
+  if (name === "favs")    renderFavs();
+  if (name === "shop")    renderShop();
+}
+
+// ---------- INGREDIENTS ----------
+function addIngredient() {
+  const input = document.getElementById("ingredientInput");
+  const val = normalize(input.value);
+  if (!val) return;
+  if (state.myIngredients.includes(val)) { toast("Już dodane"); input.value=""; return; }
+  state.myIngredients.push(val);
+  saveIng();
+  input.value = "";
+  renderChips();
+}
+function removeIngredient(i) {
+  state.myIngredients.splice(i,1); saveIng(); renderChips();
+}
+function renderChips() {
+  const box = document.getElementById("chipsBox");
+  if (!state.myIngredients.length) {
+    box.innerHTML = '<div class="chip-empty">Dodaj składniki, które masz w lodówce 👆</div>';
+    return;
+  }
+  box.innerHTML = state.myIngredients.map((ing,i) =>
+    `<div class="chip">🥬 ${ing}<button onclick="removeIngredient(${i})">×</button></div>`
+  ).join("");
+}
+
+// ---------- SUPABASE DATA ----------
+async function loadAll() {
+  if (!sb) { toast("Wklej SUPABASE_URL i ANON_KEY w index.html", "err"); return; }
+  try {
+    const { data: recipes, error: e1 } = await sb.from("recipes").select("*").order("created_at", { ascending: false });
+    if (e1) throw e1;
+    state.recipes = recipes || [];
+
+    const ids = state.recipes.map(r => r.id);
+    if (ids.length) {
+      const { data: ings, error: e2 } = await sb.from("recipe_ingredients").select("*").in("recipe_id", ids);
+      if (e2) throw e2;
+      state.ingredients = {};
+      (ings||[]).forEach(i => {
+        if (!state.ingredients[i.recipe_id]) state.ingredients[i.recipe_id] = [];
+        state.ingredients[i.recipe_id].push(i);
+      });
+    }
+
+    if (state.user) await loadFavs();
+    renderRecipes();
+  } catch (err) {
+    console.error(err);
+    toast("Nie udało się połączyć z bazą danych.", "err");
+  }
+}
+
+async function loadFavs() {
+  if (!sb || !state.user) { state.favorites = new Set(); return; }
+  const { data } = await sb.from("favorites").select("recipe_id").eq("user_id", state.user.id);
+  state.favorites = new Set((data||[]).map(f => f.recipe_id));
+}
+
+async function loadShopping() {
+  if (!sb || !state.user) { state.shopping = JSON.parse(localStorage.getItem("shop")||"[]"); return; }
+  const { data } = await sb.from("shopping_list").select("*").eq("user_id", state.user.id).order("created_at");
+  state.shopping = data || [];
+}
+
+// ---------- MATCHING ----------
+function matchScore(recipeId) {
+  const ings = state.ingredients[recipeId] || [];
+  if (!ings.length) return { pct: 0, have: [], miss: [] };
+  const mine = state.myIngredients.map(normalize);
+  const have = [], miss = [];
+  ings.forEach(i => {
+    const n = normalize(i.name);
+    const found = mine.some(m => n.includes(m) || m.includes(n));
+    (found ? have : miss).push(i);
+  });
+  return { pct: Math.round(have.length / ings.length * 100), have, miss };
+}
+
+// ---------- RENDER ----------
+function renderRecipes() {
+  const search = normalize(document.getElementById("searchInput")?.value || "");
+  const list = document.getElementById("recipesList");
+
+  // Filter chips
+  const filters = [
+    { k:"all", label:"⚪ Wszystkie" },
+    { k:"100", label:"✅ Mam wszystko" },
+    { k:"80",  label:"🟢 80%+" },
+    { k:"50",  label:"🟡 50%+" },
+    { k:"fav", label:"❤️ Ulubione" },
+  ];
+  document.getElementById("filtersBar").innerHTML = filters.map(f =>
+    `<button class="filter-chip ${state.filter===f.k?"active":""}" onclick="state.filter='${f.k}';renderRecipes()">${f.label}</button>`
+  ).join("");
+
+  let items = state.recipes.map(r => {
+    const m = matchScore(r.id);
+    return { r, m };
+  });
+
+  if (search) {
+    items = items.filter(({r}) => {
+      if (normalize(r.name).includes(search)) return true;
+      if (normalize(r.description||"").includes(search)) return true;
+      const ings = state.ingredients[r.id]||[];
+      return ings.some(i => normalize(i.name).includes(search));
+    });
+  }
+  if (state.filter === "100") items = items.filter(x => x.m.pct === 100);
+  else if (state.filter === "80") items = items.filter(x => x.m.pct >= 80);
+  else if (state.filter === "50") items = items.filter(x => x.m.pct >= 50);
+  else if (state.filter === "fav") items = items.filter(x => state.favorites.has(x.r.id));
+
+  items.sort((a,b) => b.m.pct - a.m.pct);
+
+  if (!items.length) {
+    list.innerHTML = `<div class="empty-state"><div class="big">🥲</div>Brak przepisów spełniających warunki.</div>`;
+    return;
+  }
+  list.innerHTML = items.map(({r,m}) => recipeCard(r,m)).join("");
+}
+
+function recipeCard(r, m) {
+  const matchClass = m.pct === 100 ? "" : (m.pct >= 50 ? "yellow" : "gray");
+  const matchLabel = state.myIngredients.length ? `${m.pct}% składników masz` : "wybierz składniki";
+  const missHtml = (m.miss && m.miss.length && state.myIngredients.length)
+    ? `<div class="missing">Brakuje: ${m.miss.slice(0,4).map(i=>"🛒 "+i.name).join(", ")}${m.miss.length>4?"...":""}</div>` : "";
+  return `
+    <div class="recipe-card" onclick="openRecipe('${r.id}')">
+      <div class="recipe-emoji">${r.emoji||"🍽️"}</div>
+      <div class="recipe-body">
+        <h3>${escapeHtml(r.name)}</h3>
+        <p>${escapeHtml(r.description||"")}</p>
+        <div class="recipe-meta">⏱ ${r.time_minutes||"?"} min &nbsp; ⭐ ${escapeHtml(r.difficulty||"")}</div>
+        <div class="match-bar">
+          <span class="match-badge ${matchClass}">${state.myIngredients.length?(m.pct===100?"✅ ":m.pct>=50?"🟢 ":"⚪ "):""}${matchLabel}</span>
+        </div>
+        ${missHtml}
+      </div>
+    </div>`;
+}
+
+function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+// ---------- HOME QUICK FIND ----------
+function findRecipes() {
+  if (!state.myIngredients.length) { toast("Dodaj najpierw jakieś składniki"); return; }
+  const items = state.recipes.map(r => ({ r, m: matchScore(r.id) }))
+    .filter(x => x.m.pct > 0)
+    .sort((a,b) => b.m.pct - a.m.pct)
+    .slice(0, 6);
+  const box = document.getElementById("homeResults");
+  const list = document.getElementById("homeResultsList");
+  box.style.display = "block";
+  if (!items.length) { list.innerHTML = `<div class="empty-state"><div class="big">🙈</div>Nic nie pasuje do tych składników.</div>`; return; }
+  list.innerHTML = items.map(({r,m}) => recipeCard(r,m)).join("");
+  box.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function rescueFridge() {
+  if (!state.myIngredients.length) { toast("Dodaj najpierw jakieś składniki 🥦"); return; }
+  const btn = event.currentTarget; btn.classList.add("shake"); setTimeout(()=>btn.classList.remove("shake"),500);
+  findRecipes();
+  toast("Masz niewiele składników? Spokojnie 😎");
+}
+
+function surpriseMe() {
+  const items = state.recipes.map(r => ({ r, m: matchScore(r.id) }))
+    .filter(x => state.myIngredients.length ? x.m.pct >= 50 : true);
+  if (!items.length) { toast("Brak dopasowań, dodaj więcej składników"); return; }
+  const pick = items[Math.floor(Math.random() * items.length)];
+  const btn = event.currentTarget; btn.classList.add("shake"); setTimeout(()=>btn.classList.remove("shake"),500);
+  setTimeout(() => openRecipe(pick.r.id), 300);
+}
+
+// ---------- RECIPE MODAL ----------
+function openRecipe(id) {
+  const r = state.recipes.find(x => x.id === id); if (!r) return;
+  state.activeRecipe = r;
+  const ings = state.ingredients[id] || [];
+  const m = matchScore(id);
+  const isFav = state.favorites.has(id);
+  const content = document.getElementById("recipeModalContent");
+  content.innerHTML = `
+    <div class="modal-grip"></div>
+    <button class="close-btn" onclick="closeRecipeModal()">×</button>
+    <div style="text-align:center; font-size:64px; margin:8px 0 4px;">${r.emoji||"🍽️"}</div>
+    <h2 style="text-align:center;">${escapeHtml(r.name)}</h2>
+    <p style="text-align:center; color:var(--muted); margin:0 0 14px;">${escapeHtml(r.description||"")}</p>
+    <div style="display:flex; justify-content:center; gap:16px; font-size:13px; color:var(--muted); margin-bottom:16px; flex-wrap:wrap;">
+      <span>⏱ ${r.time_minutes||"?"} min</span>
+      <span>⭐ ${escapeHtml(r.difficulty||"")}</span>
+      <span>🍽 ${r.servings||"?"} porcji</span>
+    </div>
+
+    <button class="btn btn-full ${isFav?'':'btn-ghost'}" onclick="toggleFav('${id}')">${isFav?'❤️ W ulubionych':'🤍 Dodaj do ulubionych'}</button>
+
+    <h3 style="margin:20px 0 10px;">🥕 Składniki ${state.myIngredients.length?`(${m.pct}% masz)`:""}</h3>
+    <div>${ings.map(i => {
+      const have = state.myIngredients.some(mn => {
+        const n = normalize(i.name);
+        return n.includes(mn) || mn.includes(n);
+      });
+      return `<div class="ingredient-item ${have?'have':'miss'}">
+        <span class="name">${have?'🟢':'🔴'} ${escapeHtml(i.name)}</span>
+        <span class="amount">${escapeHtml(i.amount||"")} ${escapeHtml(i.unit||"")}</span>
+      </div>`;
+    }).join("")}</div>
+
+    ${m.miss.length ? `
+      <div class="card" style="margin-top:14px; background:#fff3dc;">
+        <p style="margin:0 0 10px; font-weight:600;">Brakuje Ci ${m.miss.length} składnik${m.miss.length===1?'a':'ów'}.</p>
+        <button class="btn btn-full" onclick="addMissingToShop('${id}')">🛒 Dodaj brakujące do listy zakupów</button>
+      </div>` : ''}
+
+    <h3 style="margin:20px 0 10px;">👨‍🍳 Sposób przygotowania</h3>
+    <div style="background:#fff; padding:16px; border-radius:14px; white-space:pre-wrap; line-height:1.6; border:1px solid var(--border);">${escapeHtml(r.instructions||"")}</div>
+  `;
+  document.getElementById("recipeModal").classList.add("open");
+}
+function closeRecipeModal() { document.getElementById("recipeModal").classList.remove("open"); }
+
+// ---------- FAVORITES ----------
+async function toggleFav(id) {
+  if (!state.user) { toast("Zaloguj się, aby zapisać ulubione"); openAuth(); return; }
+  const isFav = state.favorites.has(id);
+  if (isFav) {
+    const { error } = await sb.from("favorites").delete().eq("user_id", state.user.id).eq("recipe_id", id);
+    if (error) return toast("Błąd zapisu", "err");
+    state.favorites.delete(id);
+    toast("Usunięto z ulubionych");
+  } else {
+    const { error } = await sb.from("favorites").insert({ user_id: state.user.id, recipe_id: id });
+    if (error) return toast("Błąd zapisu", "err");
+    state.favorites.add(id);
+    toast("❤️ Dodano do ulubionych", "ok");
+  }
+  openRecipe(id);
+  renderRecipes();
+}
+
+function renderFavs() {
+  const list = document.getElementById("favsList");
+  if (!state.user) { list.innerHTML = `<div class="empty-state"><div class="big">🔒</div>Zaloguj się, aby zobaczyć ulubione.<br><br><button class="btn" onclick="openAuth()">Zaloguj się</button></div>`; return; }
+  const items = state.recipes.filter(r => state.favorites.has(r.id)).map(r => ({ r, m: matchScore(r.id) }));
+  if (!items.length) { list.innerHTML = `<div class="empty-state"><div class="big">💔</div>Nie masz jeszcze ulubionych przepisów ❤️</div>`; return; }
+  list.innerHTML = items.map(({r,m}) => recipeCard(r,m)).join("");
+}
+
+// ---------- SHOPPING ----------
+async function addShopItem() {
+  const input = document.getElementById("shopInput");
+  const val = input.value.trim(); if (!val) return;
+  if (state.user) {
+    const { data, error } = await sb.from("shopping_list").insert({ user_id: state.user.id, name: val }).select().single();
+    if (error) return toast("Błąd", "err");
+    state.shopping.push(data);
+  } else {
+    state.shopping.push({ id: "local-"+Date.now(), name: val, is_bought: false });
+    localStorage.setItem("shop", JSON.stringify(state.shopping));
+  }
+  input.value = ""; renderShop();
+  toast("🛒 Dodano do listy", "ok");
+}
+async function toggleShopItem(id) {
+  const it = state.shopping.find(x=>x.id===id); if (!it) return;
+  it.is_bought = !it.is_bought;
+  if (state.user && !String(id).startsWith("local-")) {
+    await sb.from("shopping_list").update({ is_bought: it.is_bought }).eq("id", id);
+  } else {
+    localStorage.setItem("shop", JSON.stringify(state.shopping));
+  }
+  renderShop();
+}
+async function delShopItem(id) {
+  state.shopping = state.shopping.filter(x => x.id !== id);
+  if (state.user && !String(id).startsWith("local-")) {
+    await sb.from("shopping_list").delete().eq("id", id);
+  } else {
+    localStorage.setItem("shop", JSON.stringify(state.shopping));
+  }
+  renderShop();
+}
+function renderShop() {
+  const list = document.getElementById("shopList");
+  if (!state.shopping.length) { list.innerHTML = `<div class="empty-state"><div class="big">🛒</div>Lista zakupów jest pusta.</div>`; return; }
+  list.innerHTML = state.shopping.map(it => `
+    <div class="shopping-item ${it.is_bought?'bought':''}">
+      <input type="checkbox" ${it.is_bought?'checked':''} onchange="toggleShopItem('${it.id}')" />
+      <span class="name">${escapeHtml(it.name)}${it.amount?` <span class="amount" style="color:#8a7a6a;font-weight:400;">(${escapeHtml(it.amount)} ${escapeHtml(it.unit||"")})</span>`:""}</span>
+      <button class="del" onclick="delShopItem('${it.id}')">×</button>
+    </div>`).join("");
+}
+
+async function addMissingToShop(recipeId) {
+  const m = matchScore(recipeId);
+  if (!m.miss.length) return;
+  if (state.user) {
+    const rows = m.miss.map(i => ({ user_id: state.user.id, name: i.name, amount: i.amount, unit: i.unit }));
+    const { data, error } = await sb.from("shopping_list").insert(rows).select();
+    if (error) return toast("Błąd", "err");
+    state.shopping.push(...data);
+  } else {
+    m.miss.forEach(i => state.shopping.push({ id:"local-"+Date.now()+Math.random(), name:i.name, amount:i.amount, unit:i.unit, is_bought:false }));
+    localStorage.setItem("shop", JSON.stringify(state.shopping));
+  }
+  toast("🛒 Dodano brakujące składniki", "ok");
+}
+
+// ---------- ADD RECIPE FORM ----------
+function addIngToForm() {
+  const name = document.getElementById("iName").value.trim();
+  const amt  = document.getElementById("iAmt").value.trim();
+  const unit = document.getElementById("iUnit").value.trim();
+  if (!name) return;
+  state.formIngs.push({ name, amount: amt, unit });
+  document.getElementById("iName").value = "";
+  document.getElementById("iAmt").value = "";
+  document.getElementById("iUnit").value = "";
+  renderFormIngs();
+}
+function removeFormIng(i){ state.formIngs.splice(i,1); renderFormIngs(); }
+function renderFormIngs() {
+  const box = document.getElementById("formIngs");
+  if (!state.formIngs.length) { box.innerHTML = `<div class="chip-empty">Dodaj przynajmniej jeden składnik.</div>`; return; }
+  box.innerHTML = state.formIngs.map((i,idx) =>
+    `<div class="chip">🥬 ${escapeHtml(i.name)}${i.amount?` (${escapeHtml(i.amount)} ${escapeHtml(i.unit||"")})`:""}<button onclick="removeFormIng(${idx})">×</button></div>`
+  ).join("");
+}
+
+async function publishRecipe() {
+  if (!state.user) { toast("Zaloguj się, aby dodać przepis"); openAuth(); return; }
+  const name = document.getElementById("rName").value.trim();
+  if (!name) { toast("Podaj nazwę przepisu", "err"); return; }
+  if (!state.formIngs.length) { toast("Dodaj przynajmniej jeden składnik", "err"); return; }
+  const payload = {
+    user_id: state.user.id,
+    name,
+    description: document.getElementById("rDesc").value.trim(),
+    emoji: document.getElementById("rEmoji").value.trim() || "🍽️",
+    time_minutes: parseInt(document.getElementById("rTime").value) || 30,
+    difficulty: document.getElementById("rDiff").value,
+    servings: parseInt(document.getElementById("rServ").value) || 2,
+    instructions: document.getElementById("rInst").value.trim(),
+    is_public: true,
+  };
+  const { data: rec, error } = await sb.from("recipes").insert(payload).select().single();
+  if (error) { console.error(error); toast("Błąd zapisu: "+error.message, "err"); return; }
+  const ings = state.formIngs.map(i => ({ recipe_id: rec.id, name: i.name, amount: i.amount, unit: i.unit }));
+  const { error: e2 } = await sb.from("recipe_ingredients").insert(ings);
+  if (e2) { toast("Zapisano, ale błąd składników", "err"); return; }
+  toast("✅ Przepis opublikowany!", "ok");
+  // reset
+  ["rName","rDesc","rInst"].forEach(id => document.getElementById(id).value = "");
+  state.formIngs = []; renderFormIngs();
+  await loadAll();
+  switchPage("recipes");
+}
+
+// ---------- AUTH ----------
+function openAuth() { document.getElementById("authModal").classList.add("open"); }
+function closeAuth() { document.getElementById("authModal").classList.remove("open"); }
+function toggleAuthMode() {
+  state.authMode = state.authMode === "login" ? "signup" : "login";
+  document.getElementById("authTitle").textContent     = state.authMode==="login" ? "Zaloguj się" : "Załóż konto";
+  document.getElementById("authSubtitle").textContent  = state.authMode==="login" ? "Zaloguj się, aby zapisywać ulubione i własne przepisy." : "Utwórz konto, aby zacząć gotować.";
+  document.getElementById("authSubmit").textContent    = state.authMode==="login" ? "Zaloguj się" : "Zarejestruj";
+  document.getElementById("authToggle").textContent    = state.authMode==="login" ? "Nie mam konta — zarejestruj mnie" : "Mam konto — zaloguj mnie";
+}
+async function authSubmit() {
+  const email = document.getElementById("authEmail").value.trim();
+  const pass  = document.getElementById("authPass").value;
+  if (!email || !pass) { toast("Wpisz e-mail i hasło", "err"); return; }
+  if (!sb) { toast("Brak konfiguracji Supabase", "err"); return; }
+  try {
+    let res;
+    if (state.authMode === "login") res = await sb.auth.signInWithPassword({ email, password: pass });
+    else res = await sb.auth.signUp({ email, password: pass });
+    if (res.error) throw res.error;
+    if (state.authMode === "signup" && !res.data.session) {
+      toast("Sprawdź e-mail — potwierdź rejestrację ✉️", "ok");
+    } else {
+      toast(state.authMode==="login" ? "✅ Zalogowano" : "✅ Konto utworzone", "ok");
+    }
+    closeAuth();
+  } catch (e) {
+    toast(e.message.includes("Invalid") ? "Nieprawidłowy e-mail lub hasło." : e.message, "err");
+  }
+}
+async function doLogout() {
+  await sb.auth.signOut();
+  toast("Wylogowano");
+}
+
+function updateAuthUI() {
+  const btn = document.getElementById("authBtn");
+  if (state.user) {
+    btn.textContent = "Wyloguj";
+    btn.onclick = doLogout;
+  } else {
+    btn.textContent = "Zaloguj";
+    btn.onclick = openAuth;
+  }
+}
+
+// ---------- INIT ----------
+(async function init() {
+  renderChips();
+  renderFormIngs();
+  if (!sb) {
+    toast("⚠️ Wklej SUPABASE_URL i ANON_KEY w kodzie!", "err");
+    document.getElementById("recipesList").innerHTML = `<div class="empty-state"><div class="big">🔧</div>Skonfiguruj Supabase w pliku index.html<br>(na górze, w sekcji &lt;script&gt;)</div>`;
+    return;
+  }
+  const { data: sess } = await sb.auth.getSession();
+  state.user = sess?.session?.user || null;
+  updateAuthUI();
+
+  sb.auth.onAuthStateChange(async (_, session) => {
+    state.user = session?.user || null;
+    updateAuthUI();
+    await loadAll();
+    await loadShopping();
+    renderFavs();
+    renderShop();
+  });
+
+  await loadAll();
+  await loadShopping();
+})();
+</script>
+</body>
+</html>
